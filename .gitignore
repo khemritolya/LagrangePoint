@@ -1,0 +1,8 @@
+.gradle/
+classes/
+core/build/
+core/out/
+desktop/build/
+desktop/out/
+assets.zip
+LagrangePoint.iml
