@@ -19,10 +19,10 @@ public class NameFactory {
      * @param filename name of file to initialize the generator to
      * @param look_ahead how many characters to analyze
      */
-    public NameFactory(String filename, int look_ahead, int target_length) {
+    public NameFactory(String filename, int look_ahead, int target_length, int seed) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(filename));
-            randy = new Random();
+            randy = new Random(seed);
 
             metaChances = new HashMap<String, HashMap<Character, Double>>();
             lookAhead = look_ahead;

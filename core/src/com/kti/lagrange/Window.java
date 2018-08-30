@@ -29,6 +29,8 @@ public class Window extends ApplicationAdapter {
 	private Sound sound;
 	private long soundID;
 
+	private int state;
+
 	@Override
 	public void create () {
 		w = this;
@@ -47,19 +49,20 @@ public class Window extends ApplicationAdapter {
 
 		try {
 			sound = Gdx.audio.newSound(Gdx.files.internal("assets/audio.mp3"));
-			soundID = sound.play(0.5f);
-			if (soundID == -1) throw new IOException("Could not init music propely");
+			soundID = sound.play(0.0f);
+			if (soundID == -1) throw new IOException("Could not init music properly");
 			sound.setLooping(soundID, true);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		canvas = new Canvas(font);
-		world = new World();
+		world = new World(444);
 
 		batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
+
+		state = 0;
 	}
 
 	@Override
@@ -69,7 +72,13 @@ public class Window extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		canvas.generateBuffer(world);
+		if (state == 0) {
+			canvas.generateBuffer();
+		}
+
+		if (state == 1) {
+			canvas.generateBuffer(world);
+		}
 
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		canvas.renderBackground(shapeRenderer);
@@ -83,20 +92,32 @@ public class Window extends ApplicationAdapter {
 			System.exit(0);
 		}
 
-		if (Gdx.input.isKeyPressed(UP)) {
-			world.dy(1);
+		if (state == 0) {
+			if (Gdx.input.isKeyPressed(ENTER)) {
+				state = 1;
+			}
 		}
 
-		if (Gdx.input.isKeyPressed(DOWN)) {
-			world.dy(-1);
-		}
+		if (state == 1) {
+			if (Gdx.input.isKeyPressed(ESCAPE)) {
+				state = 0;
+			}
 
-		if (Gdx.input.isKeyPressed(LEFT)) {
-			world.dx(1);
-		}
+			if (Gdx.input.isKeyPressed(UP)) {
+				world.dy(1);
+			}
 
-		if (Gdx.input.isKeyPressed(RIGHT)) {
-			world.dx(-1);
+			if (Gdx.input.isKeyPressed(DOWN)) {
+				world.dy(-1);
+			}
+
+			if (Gdx.input.isKeyPressed(LEFT)) {
+				world.dx(1);
+			}
+
+			if (Gdx.input.isKeyPressed(RIGHT)) {
+				world.dx(-1);
+			}
 		}
 	}
 	
