@@ -57,7 +57,7 @@ public class Window extends ApplicationAdapter {
 		}
 
 		canvas = new Canvas(font);
-		world = new World(444);
+		world = new World(0);
 
 		batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
@@ -73,10 +73,14 @@ public class Window extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		if (state == 0) {
-			canvas.generateBuffer();
+			canvas.generateIntroBuffer();
 		}
 
 		if (state == 1) {
+			canvas.generatePauseBuffer();
+		}
+
+		if (state == 2) {
 			canvas.generateBuffer(world);
 		}
 
@@ -93,14 +97,20 @@ public class Window extends ApplicationAdapter {
 		}
 
 		if (state == 0) {
-			if (Gdx.input.isKeyPressed(ENTER)) {
+			if (Gdx.input.isKeyJustPressed(ENTER)) {
 				state = 1;
 			}
 		}
 
 		if (state == 1) {
-			if (Gdx.input.isKeyPressed(ESCAPE)) {
-				state = 0;
+			if (Gdx.input.isKeyJustPressed(ENTER)) {
+				state = 2;
+			}
+		}
+
+		if (state == 2) {
+			if (Gdx.input.isKeyJustPressed(ESCAPE)) {
+				state = 1;
 			}
 
 			if (Gdx.input.isKeyPressed(UP)) {
@@ -117,6 +127,14 @@ public class Window extends ApplicationAdapter {
 
 			if (Gdx.input.isKeyPressed(RIGHT)) {
 				world.dx(-1);
+			}
+
+			if (Gdx.input.isKeyJustPressed(M)) {
+				if (world.getMapmode() == 0) {
+					world.setMapmode(1);
+				} else {
+					world.setMapmode(0);
+				}
 			}
 		}
 	}

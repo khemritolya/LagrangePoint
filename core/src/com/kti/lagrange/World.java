@@ -1,6 +1,11 @@
 package com.kti.lagrange;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class World {
     private static final float SHORE_HEIGHT = 0.3f;
@@ -15,6 +20,9 @@ public class World {
     private int mbX, mbY;
     private int selX, selY;
     private Biome[][] biomes;
+    private float[][] heightmap;
+
+    private int mapmode;
 
     public World(int seed) {
         NameFactory nm = new NameFactory("assets/planet-names.txt", 2, 6, seed);
@@ -38,36 +46,47 @@ public class World {
 
         mbX = 0;
         mbY = 0;
+
+        mapmode = 0;
     }
 
+
     private void generate() {
-        biomes = new Biome[100][300];
+        biomes = new Biome[100][200];
+        heightmap = new float[100][200];
 
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
                 if (eval(j / x_s, i / y_s) > SHORE_HEIGHT) {
-                    if (eval((j-1) / x_s, i / y_s) > SHORE_HEIGHT &&
-                            eval((j+1) / x_s, i / y_s) > SHORE_HEIGHT &&
-                            eval(j / x_s, (i-1) / y_s) > SHORE_HEIGHT &&
-                            eval(j / x_s, (i+1) / y_s) > SHORE_HEIGHT) {
-                        if (eval(j / x_s, i / y_s) > MNTN_HEIGHT) {
-                            if (eval((j-1) / x_s, i / y_s) > MNTN_HEIGHT &&
-                                    eval((j+1) / x_s, i / y_s) > MNTN_HEIGHT &&
-                                    eval(j / x_s, (i-1) / y_s) > MNTN_HEIGHT &&
-                                    eval(j / x_s, (i+1) / y_s) > MNTN_HEIGHT) {
-                                biomes[i][j] = Biome.HighMountain;
-                            } else {
-                                biomes[i][j] = Biome.Mountain;
-                            }
+                    if (eval(j / x_s, i / y_s) > MNTN_HEIGHT) {
+                        if (eval((j-1) / x_s, i / y_s) > MNTN_HEIGHT &&
+                                eval((j+1) / x_s, i / y_s) > MNTN_HEIGHT &&
+                                eval(j / x_s, (i-1) / y_s) > MNTN_HEIGHT &&
+                                eval(j / x_s, (i+1) / y_s) > MNTN_HEIGHT) {
+                            biomes[i][j] = Biome.HighMountain;
                         } else {
-                            biomes[i][j] = Biome.Grassland;
+                            biomes[i][j] = Biome.Mountain;
                         }
                     } else {
-                        biomes[i][j] = Biome.Shore;
+                        biomes[i][j] = Biome.Grassland;
                     }
                 } else {
                     biomes[i][j] = Biome.Sea;
                 }
+            }
+        }
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                heightmap[i][j] = (float) eval(j / x_s, i / y_s)+1;
+            }
+        }
+
+        float m = max(heightmap);
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                heightmap[i][j] = heightmap[i][j] / m;
             }
         }
 
@@ -77,11 +96,11 @@ public class World {
         }
 
         for (int i = 0; i < biomes[0].length; i++) {
-            for (int j = 0; j < (eval(i, 0)+1) * 2 + 1; j++) {
+            for (int j = 0; j < (eval(i / 3.0f, 0)+1) * 2 + 1; j++) {
                 biomes[j][i] = Biome.Ice;
             }
 
-            for (int j = 0; j < (eval(i, biomes.length - 1) + 1) * 2 + 1; j++) {
+            for (int j = 0; j < (eval(i / 3.0f, biomes.length - 1) + 1) * 2 + 1; j++) {
                 biomes[biomes.length - j - 1][i] = Biome.Ice;
             }
         }
@@ -106,7 +125,7 @@ public class World {
 
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.Grassland && osn.eval(i, j) > 0.5) {
+                if (biomes[i][j] == Biome.Grassland && osn.eval(i, j) > 0.6) {
                     biomes[i][j] = Biome.Lake;
                 }
 
@@ -114,12 +133,135 @@ public class World {
                     biomes[i][j] = Biome.Forest;
                 }
 
+                if (biomes[i][j] == Biome.Desert && osn.eval(i, j) > 0.75) {
+                    biomes[i][j] = Biome.Oasis;
+                }
+
                 if (biomes[i][j] == Biome.HighMountain && osn.eval(i, j) > 0.5) {
                     biomes[i][j] = Biome.Volcano;
                 }
             }
         }
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (biomes[i][j] == Biome.Lake || biomes[i][j] == Biome.Oasis) {
+                    if (biomes[i-1][j] == Biome.Sea || biomes[i+1][j] == Biome.Sea ||
+                            biomes[i][j-1] == Biome.Sea || biomes[i][j+1] == Biome.Sea)
+                        biomes[i][j] = Biome.Sea;
+                }
+            }
+        }
+
+        /*for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (biomes[i][j] == Biome.Lake) {
+                    lake(i, j);
+                    biomes[i][j] = Biome.Lake;
+                }
+            }
+        }*/
     }
+
+    // working on it https://blog.habrador.com/2013/02/how-to-generate-random-terrain.html
+
+    private void generate2(int seed) {
+        biomes = new Biome[100][200];
+        heightmap = new float[100][200];
+
+        float[][] initHeightMap = new float[100][200];
+        Random r = new Random(seed);
+
+        raiseRandom(r, initHeightMap, 10, 20, 90, 180);
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                biomes[i][j] = Biome.Sea;
+            }
+        }
+
+        /*for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                initHeightMap[i][j] += 12*osn.eval(j / x_s, i / y_s);
+            }
+        }*/
+
+        float m = max(initHeightMap);
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                heightmap[i][j] = initHeightMap[i][j] / m;
+            }
+        }
+    }
+
+    private void raiseRandom(Random r, float[][] initHeightMap, int i1, int j1, int i2, int j2) {
+        if (Math.abs(i1 - i2) < 2 || Math.abs(j1 - j2) < 2)
+            return;
+
+        float m = (r.nextFloat() * 5 - 2) + Math.max(0, Math.min(10, 100 / dst((i1+i2)/2, (j1+j2)/2)));
+
+        //System.out.println(100 / dst((i1+i2)/2, (j1+j2)/2));
+
+        for (int i = i1; i < i2; i++) {
+            for (int j = j1; j < j2; j++) {
+                initHeightMap[i][j] += m;
+            }
+        }
+
+        raiseRandom(r, initHeightMap, i1+f(r), j1+f(r), (i1+i2)/2, (j1+j2)/2);
+        raiseRandom(r, initHeightMap, i1+f(r), (j1+j2)/2, (i1+i2)/2, j2+f(r));
+        raiseRandom(r, initHeightMap, (i1+i2)/2, j1+f(r), i2+f(r), (j1+j2)/2);
+        raiseRandom(r, initHeightMap, (i1+i2)/2, (j1+j2)/2, i2+f(r), j2+f(r));
+    }
+
+    private float dst(int i, int j) {
+        return (float) Math.sqrt((i - biomes.length / 2) * (i - biomes.length / 2) +
+                (j - biomes[0].length / 2) * (j - biomes[0].length / 2));
+    }
+
+    private int f(Random r) {
+        return r.nextInt(3) - 1;
+    }
+
+    /*private void lake(int i, int j) {
+        if (i < 0 || j < 0 || i >= biomes.length || j >= biomes[0].length) return;
+        if (biomes[i][j] == Biome.Sea || biomes[i][j] == Biome.Oasis ||
+                biomes[i][j] == Biome.Ice || biomes[i][j] == Biome.RIVER_EAST_WEST ||
+                biomes[i][j] == Biome.RIVER_NORTH_SOUTH) return;
+
+        double[] vals = new double[4];
+        vals[0] = osn.eval((j-1) / x_s, i / y_s);
+        vals[1] = osn.eval((j+1) / x_s, i / y_s);
+        vals[2] = osn.eval(j / x_s, (i-1) / y_s);
+        vals[3] = osn.eval(j / x_s, (i+1) / y_s);
+
+        Arrays.sort(vals);
+
+        if (osn.eval((j-1) / x_s, i / y_s) == vals[0]) {
+            biomes[i][j] = Biome.RIVER_EAST_WEST;
+            lake(i, j-1);
+            return;
+        }
+
+        if (osn.eval((j+1) / x_s, i / y_s) == vals[0]) {
+            biomes[i][j] = Biome.RIVER_EAST_WEST;
+            lake(i, j+1);
+            return;
+        }
+
+        if (osn.eval(j / x_s, (i-1) / y_s) == vals[0]) {
+            biomes[i][j] = Biome.RIVER_NORTH_SOUTH;
+            lake(i-1, j);
+            return;
+        }
+
+        if (osn.eval(j / x_s, (i+1) / y_s) == vals[0]) {
+            biomes[i][j] = Biome.RIVER_NORTH_SOUTH;
+            lake(i+1, j);
+            return;
+        }
+    }*/
 
     private void flood(int i, int j) {
         if(i < 0 || j < 0 || i >= biomes.length || j >= biomes[0].length) return;
@@ -156,8 +298,13 @@ public class World {
             charBuffer[i+y][j+x] = 'X';
             fontColorBuffer[i+y][j+x] = Color.GOLDENROD;
         } else {
-            charBuffer[i+y][j+x] = biomes[i][j].sigchar;
-            fontColorBuffer[i+y][j+x] = biomes[i][j].sigcolor;
+            if (mapmode == 0) {
+                charBuffer[i+y][j+x] = biomes[i][j].sigchar;
+                fontColorBuffer[i+y][j+x] = biomes[i][j].sigcolor;
+            } else {
+                charBuffer[i+y][j+x] = 'X';
+                fontColorBuffer[i+y][j+x] = new Color(heightmap[i][j], 0,0,1);
+            }
         }
     }
 
@@ -208,6 +355,18 @@ public class World {
         }
     }
 
+    private float max(float[][] heightmap) {
+        float max = Integer.MIN_VALUE;
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                max = Math.max(max, heightmap[i][j]);
+            }
+        }
+
+        return max;
+    }
+
     private double eval(double a, double b) {
         return osn.eval(a, b);
     }
@@ -218,5 +377,13 @@ public class World {
 
     public String getName() {
         return name;
+    }
+
+    public void setMapmode(int m) {
+        mapmode = m;
+    }
+
+    public int getMapmode() {
+        return mapmode;
     }
 }

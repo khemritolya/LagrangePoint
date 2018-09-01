@@ -41,6 +41,8 @@ public class Canvas {
         loadString("Biome Info: ", 5, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
         loadString(world.getSelectedInfo(), 6, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
 
+        loadString("\'m\' to cycle mapmode", 8, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+
         for (int i = 0; i < charBuffer.length; i++) {
             charBuffer[i][charBuffer[0].length - 30] = BORDER_CHAR;
             fontColorBuffer[i][charBuffer[0].length - 30] = BORDER_COLOR;
@@ -57,7 +59,7 @@ public class Canvas {
         generateBorder();
     }
 
-    public void generateBuffer() {
+    public void generateIntroBuffer() {
         clear();
 
         loadString("Lagrange Point Version 0.01", charBuffer.length / 2 - 10,
@@ -72,6 +74,23 @@ public class Canvas {
                 charBuffer[0].length / 2 - 5, Color.WHITE, Color.BLACK);
         loadString("Ben Lepper", charBuffer.length / 2 - 5,
                 charBuffer[0].length / 2 - 5, Color.WHITE, Color.BLACK);
+
+        loadString("Press ENTER to continue...", charBuffer.length / 2,
+                charBuffer[0].length / 2 - "Press ENTER to continue...".length() / 2,
+                Color.GRAY, Color.BLACK);
+
+        generateBorder();
+    }
+
+    public void generatePauseBuffer() {
+        clear();
+
+        loadString("Lagrange Point Version 0.01", charBuffer.length / 2 - 10,
+                charBuffer[0].length / 2 - "Lagrange Point Version 0.01".length() / 2,
+                Color.WHITE, Color.BLACK);
+        loadString("Author: Khemri Tolya", charBuffer.length / 2 - 9,
+                charBuffer[0].length / 2 - "Author: Khemri Tolya".length() / 2,
+                Color.WHITE, Color.BLACK);
 
         loadString("Press ENTER to continue...", charBuffer.length / 2,
                 charBuffer[0].length / 2 - "Press ENTER to continue...".length() / 2,
