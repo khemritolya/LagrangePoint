@@ -12,3 +12,4 @@ settings.gradle
 gradlew
 build.gradle
 gradle/
+gradlew.bat
