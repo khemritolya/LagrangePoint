@@ -1,3 +1,4 @@
+.idea/
 .gradle/
 classes/
 core/build/
@@ -6,3 +7,8 @@ desktop/build/
 desktop/out/
 assets.zip
 LagrangePoint.iml
+gradle.*
+settings.gradle
+gradlew
+build.gradle
+gradle/
