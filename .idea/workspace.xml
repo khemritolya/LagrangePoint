@@ -6,13 +6,7 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="74d7cd24-914e-4b62-9bfc-fccaa1656562" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/com/kti/lagrange/Biome.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/com/kti/lagrange/Biome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/com/kti/lagrange/Canvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/com/kti/lagrange/Canvas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/com/kti/lagrange/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/com/kti/lagrange/Window.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/com/kti/lagrange/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/com/kti/lagrange/World.java" afterDir="false" />
-    </list>
+    <list default="true" id="74d7cd24-914e-4b62-9bfc-fccaa1656562" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/core/.gradle/" />
     <ignored path="$PROJECT_DIR$/core/build/" />
     <ignored path="$PROJECT_DIR$/core/out/" />
@@ -1090,12 +1084,12 @@
       <workItem from="1535902529245" duration="599000" />
       <workItem from="1535907584876" duration="18460000" />
       <workItem from="1535984233747" duration="9819000" />
-      <workItem from="1535998653023" duration="3527000" />
+      <workItem from="1535998653023" duration="4042000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="127933000" />
+    <option name="totallyTimeSpent" value="128448000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
