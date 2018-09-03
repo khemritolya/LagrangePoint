@@ -49,7 +49,7 @@
       <file leaf-file-name="Canvas.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/src/com/kti/lagrange/Canvas.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="74">
+            <state relative-caret-position="2535">
               <caret line="205" column="41" selection-start-line="205" selection-start-column="41" selection-end-line="205" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -1084,12 +1084,12 @@
       <workItem from="1535902529245" duration="599000" />
       <workItem from="1535907584876" duration="18460000" />
       <workItem from="1535984233747" duration="9819000" />
-      <workItem from="1535998653023" duration="4042000" />
+      <workItem from="1535998653023" duration="4405000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="128448000" />
+    <option name="totallyTimeSpent" value="128811000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
@@ -1575,7 +1575,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/com/kti/lagrange/Canvas.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="74">
+        <state relative-caret-position="2535">
           <caret line="205" column="41" selection-start-line="205" selection-start-column="41" selection-end-line="205" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />

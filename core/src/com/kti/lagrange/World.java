@@ -164,7 +164,7 @@ public class World {
     }*/
 
     private void generate(int seed) {
-        int w = 150;
+        int w = 250;
         int h = 100;
 
         biomes = new Biome[h][w];
