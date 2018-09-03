@@ -29,6 +29,10 @@ public class Window extends ApplicationAdapter {
 	private Sound sound;
 	private long soundID;
 
+	private static final int INTRO = 0;
+	private static final int PAUSE = 1;
+	private static final int GAME = 2;
+	private static final int MAP_HELP = 3;
 	private int state;
 
 	@Override
@@ -57,7 +61,7 @@ public class Window extends ApplicationAdapter {
 		}
 
 		canvas = new Canvas(font);
-		world = new World(0);
+		world = new World(666);
 
 		batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
@@ -72,17 +76,15 @@ public class Window extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		if (state == 0) {
+		if (state == INTRO) {
 			canvas.generateIntroBuffer();
-		}
-
-		if (state == 1) {
-			canvas.generatePauseBuffer();
-		}
-
-		if (state == 2) {
+		} else if (state == PAUSE) {
+            canvas.generatePauseBuffer();
+        } else if (state == GAME) {
 			canvas.generateBuffer(world);
-		}
+		} else if (state == MAP_HELP) {
+		    canvas.generateHelpBuffer();
+        }
 
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		canvas.renderBackground(shapeRenderer);
@@ -96,22 +98,22 @@ public class Window extends ApplicationAdapter {
 			System.exit(0);
 		}
 
-		if (state == 0) {
+		if (state == INTRO) {
 			if (Gdx.input.isKeyJustPressed(ENTER)) {
-				state = 1;
+				state = GAME;
 			}
-		}
-
-		if (state == 1) {
+		} else if (state == PAUSE) {
 			if (Gdx.input.isKeyJustPressed(ENTER)) {
-				state = 2;
+				state = GAME;
 			}
-		}
-
-		if (state == 2) {
+		} else if (state == GAME) {
 			if (Gdx.input.isKeyJustPressed(ESCAPE)) {
-				state = 1;
+				state = PAUSE;
 			}
+
+			if (Gdx.input.isKeyJustPressed(Q)) {
+			    state = MAP_HELP;
+            }
 
 			if (Gdx.input.isKeyPressed(UP)) {
 				world.dy(1);
@@ -136,7 +138,11 @@ public class Window extends ApplicationAdapter {
 					world.setMapmode(0);
 				}
 			}
-		}
+		} else if (state == MAP_HELP) {
+		    if (Gdx.input.isKeyJustPressed(ESCAPE)) {
+		        state = GAME;
+            }
+        }
 	}
 	
 	@Override

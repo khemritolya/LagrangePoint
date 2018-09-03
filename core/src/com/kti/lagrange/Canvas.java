@@ -42,6 +42,8 @@ public class Canvas {
         loadString(world.getSelectedInfo(), 6, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
 
         loadString("\'m\' to cycle mapmode", 8, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString("\'q\' for help page", 9, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+
 
         for (int i = 0; i < charBuffer.length; i++) {
             charBuffer[i][charBuffer[0].length - 30] = BORDER_CHAR;
@@ -75,8 +77,8 @@ public class Canvas {
         loadString("Ben Lepper", charBuffer.length / 2 - 5,
                 charBuffer[0].length / 2 - 5, Color.WHITE, Color.BLACK);
 
-        loadString("Press ENTER to continue...", charBuffer.length / 2,
-                charBuffer[0].length / 2 - "Press ENTER to continue...".length() / 2,
+        loadString("Press ENTER to start...", charBuffer.length / 2,
+                charBuffer[0].length / 2 - "Press ENTER to continue.".length() / 2,
                 Color.GRAY, Color.BLACK);
 
         generateBorder();
@@ -92,9 +94,41 @@ public class Canvas {
                 charBuffer[0].length / 2 - "Author: Khemri Tolya".length() / 2,
                 Color.WHITE, Color.BLACK);
 
+        loadString("<< P A U S E D >>", charBuffer.length / 2 - 5,
+                charBuffer[0].length / 2 - "<< P A U S E D >>".length() / 2,
+                Color.WHITE, Color.BLACK);
+
         loadString("Press ENTER to continue...", charBuffer.length / 2,
-                charBuffer[0].length / 2 - "Press ENTER to continue...".length() / 2,
+                charBuffer[0].length / 2 - "Press ENTER to continue.".length() / 2,
                 Color.GRAY, Color.BLACK);
+
+        generateBorder();
+    }
+
+    public void generateHelpBuffer() {
+        clear();
+
+        loadString("Lagrange Point Map Help Page Version I",2,2, Color.WHITE, Color.BLACK);
+        loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
+        loadString("\'ESC\' to return to game",5,2, Color.WHITE, Color.BLACK);
+
+        loadString("Biomes: ", 8, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.SEA, 10, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.LAKE, 11, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.OASIS, 12, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.RIVER_NORTH_SOUTH, 13, 2, Color.WHITE, Color.BLACK);
+
+        loadBiomeAndInfo(Biome.PLAINS, 15, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.FIELD, 16, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.FOREST, 17, 2, Color.WHITE, Color.BLACK);
+
+        loadBiomeAndInfo(Biome.MOUNTAIN, 19, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.HIGH_MOUNTAIN, 20, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.VOLCANO, 21, 2, Color.WHITE, Color.BLACK);
+
+        loadBiomeAndInfo(Biome.DESERT, 23, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.NORTH_TUNDRA, 24, 2, Color.WHITE, Color.BLACK);
+        loadBiomeAndInfo(Biome.ICE, 25, 2, Color.WHITE, Color.BLACK);
 
         generateBorder();
     }
@@ -161,6 +195,52 @@ public class Canvas {
             charBuffer[row][i + start] = s.charAt(i);
             fontColorBuffer[row][i + start] = fontColor;
             backColorBuffer[row][i + start] = backColor;
+        }
+    }
+
+    private void loadBiomeAndInfo(Biome b, int row, int start, Color fontColor, Color backColor) {
+        charBuffer[row][start] = b.sigchar;
+        fontColorBuffer[row][start] = b.sigcolor;
+
+        if (b == Biome.SEA) {
+            loadString(" represents the sea. There are many fish here.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.PLAINS) {
+            loadString(" represents a plains biome. There may be various critters around here.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.MOUNTAIN) {
+            loadString(" represents a mountain. High altitude and a beautiful view.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.FIELD) {
+            loadString(" represents prime grade farmland. Expect developed civilization here.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.FOREST) {
+            loadString(" represents a forest. Any developed civilization gets it\'s wood here.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.LAKE) {
+            loadString(" represents a lake. Like an ocean, except smaller.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.OASIS) {
+            loadString(" represents an oasis. Like a lake, except in the desert.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.HIGH_MOUNTAIN) {
+            loadString(" represents the peaks of the highest mountains. Extremely high altitude and a beautiful view.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.VOLCANO) {
+            loadString(" represents the more volatile cousin of Peaks, Volcanos",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.DESERT) {
+            loadString(" represents a desert. Expect nasty creepy-crawlies.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.NORTH_TUNDRA) {
+            loadString(" represents the northernmost tundra. There is little of value here.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.ICE) {
+            loadString(" represents the polar ice caps. Nice view, but no life whatsoever.",
+                    row, start+1, fontColor, backColor);
+        } else if (b == Biome.RIVER_NORTH_SOUTH) {
+            loadString(" represents a river. Water flows along here, allowing civilization to draw water.",
+                    row, start+1, fontColor, backColor);
         }
     }
 

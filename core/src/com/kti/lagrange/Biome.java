@@ -3,10 +3,14 @@ package com.kti.lagrange;
 import com.badlogic.gdx.graphics.Color;
 
 public enum Biome {
-    Sea("Ocean", '~', Color.BLUE), Grassland("Plains", 'm', CC.DARK_GREEN), Oasis("Oasis", 'o', Color.TEAL),
-    Mountain("Mountain", '^', Color.GRAY), HighMountain("Peak", '^', Color.LIGHT_GRAY),
-    Ice("Ice Shelf", '-', Color.CYAN), Lake("Lake", 'o', Color.CYAN), Desert("Desert", '-', Color.GOLDENROD),
-    Forest("Forest", '#', CC.ALMOST_DARK_GREEN), Volcano("Volcano", '^', Color.RED);
+    SEA("Ocean", '~', Color.BLUE), PLAINS("Plains", 'm', CC.DARK_GREEN), OASIS("Oasis", '~', Color.TEAL),
+    MOUNTAIN("Mountain", '^', Color.GRAY), HIGH_MOUNTAIN("Peak", '^', Color.LIGHT_GRAY),
+    ICE("Ice Shelf", '+', Color.WHITE), LAKE("Lake", '~', Color.CYAN), DESERT("Desert", '-', Color.GOLDENROD),
+    FOREST("Forest", '#', CC.ALMOST_DARK_GREEN), VOLCANO("Volcano", '^', Color.RED),
+    FIELD("Fertile Land", 'm', Color.YELLOW), NORTH_TUNDRA("Tundra", '-', Color.LIGHT_GRAY),
+    RIVER_EAST_WEST("River", '-', Color.CYAN), RIVER_NORTH_SOUTH("River", '|', Color.CYAN),
+    TMP("ERROR", '$', Color.RED);
+
     private static class CC {
         private static final Color DARK_GREEN = new Color(0, 0.5f, 0, 1);
         private static final Color ALMOST_DARK_GREEN = new Color(0, 0.6f, 0, 1);

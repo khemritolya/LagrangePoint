@@ -1,10 +1,8 @@
 package com.kti.lagrange;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Random;
 
 public class World {
@@ -30,7 +28,7 @@ public class World {
 
         osn = new OpenSimplexNoise(seed);
 
-        generate();
+        generate(seed);
 
         x = 1;
         y = 1;
@@ -50,6 +48,8 @@ public class World {
         mapmode = 0;
     }
 
+    /*
+    So that posterity may see my humble beggingins!
 
     private void generate() {
         biomes = new Biome[100][200];
@@ -63,15 +63,15 @@ public class World {
                                 eval((j+1) / x_s, i / y_s) > MNTN_HEIGHT &&
                                 eval(j / x_s, (i-1) / y_s) > MNTN_HEIGHT &&
                                 eval(j / x_s, (i+1) / y_s) > MNTN_HEIGHT) {
-                            biomes[i][j] = Biome.HighMountain;
+                            biomes[i][j] = Biome.HIGH_MOUNTAIN;
                         } else {
-                            biomes[i][j] = Biome.Mountain;
+                            biomes[i][j] = Biome.MOUNTAIN;
                         }
                     } else {
-                        biomes[i][j] = Biome.Grassland;
+                        biomes[i][j] = Biome.PLAINS;
                     }
                 } else {
-                    biomes[i][j] = Biome.Sea;
+                    biomes[i][j] = Biome.SEA;
                 }
             }
         }
@@ -91,188 +91,387 @@ public class World {
         }
 
         for (int i = 0; i < biomes.length; i++) {
-            flood(i, 0);
-            flood(i, biomes[0].length - 1);
+            isOcean(i, 0);
+            isOcean(i, biomes[0].length - 1);
         }
 
         for (int i = 0; i < biomes[0].length; i++) {
             for (int j = 0; j < (eval(i / 3.0f, 0)+1) * 2 + 1; j++) {
-                biomes[j][i] = Biome.Ice;
+                biomes[j][i] = Biome.ICE;
             }
 
             for (int j = 0; j < (eval(i / 3.0f, biomes.length - 1) + 1) * 2 + 1; j++) {
-                biomes[biomes.length - j - 1][i] = Biome.Ice;
+                biomes[biomes.length - j - 1][i] = Biome.ICE;
             }
         }
 
         for (int i = 2 * biomes.length / 5; i < 3 * biomes.length / 5; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.Grassland) {
-                    biomes[i][j] = Biome.Desert;
+                if (biomes[i][j] == Biome.PLAINS) {
+                    biomes[i][j] = Biome.DESERT;
                 }
             }
         }
 
         for (int i = 0; i < biomes[0].length; i++) {
-            if (osn.eval(2 * biomes.length / 5, i) > 0 && biomes[2 * biomes.length / 5][i] == Biome.Desert) {
-                biomes[2 * biomes.length / 5][i] = Biome.Grassland;
+            if (osn.eval(2 * biomes.length / 5, i) > 0 && biomes[2 * biomes.length / 5][i] == Biome.DESERT) {
+                biomes[2 * biomes.length / 5][i] = Biome.PLAINS;
             }
 
-            if (osn.eval(3 * biomes.length / 5, i) > 0 && biomes[3 * biomes.length / 5 - 1][i] == Biome.Desert) {
-                biomes[3 * biomes.length / 5 - 1][i] = Biome.Grassland;
-            }
-        }
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.Grassland && osn.eval(i, j) > 0.6) {
-                    biomes[i][j] = Biome.Lake;
-                }
-
-                if (biomes[i][j] == Biome.Grassland && osn.eval(i, j) < -0.25) {
-                    biomes[i][j] = Biome.Forest;
-                }
-
-                if (biomes[i][j] == Biome.Desert && osn.eval(i, j) > 0.75) {
-                    biomes[i][j] = Biome.Oasis;
-                }
-
-                if (biomes[i][j] == Biome.HighMountain && osn.eval(i, j) > 0.5) {
-                    biomes[i][j] = Biome.Volcano;
-                }
+            if (osn.eval(3 * biomes.length / 5, i) > 0 && biomes[3 * biomes.length / 5 - 1][i] == Biome.DESERT) {
+                biomes[3 * biomes.length / 5 - 1][i] = Biome.PLAINS;
             }
         }
 
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.Lake || biomes[i][j] == Biome.Oasis) {
-                    if (biomes[i-1][j] == Biome.Sea || biomes[i+1][j] == Biome.Sea ||
-                            biomes[i][j-1] == Biome.Sea || biomes[i][j+1] == Biome.Sea)
-                        biomes[i][j] = Biome.Sea;
+                if (biomes[i][j] == Biome.PLAINS && osn.eval(i, j) > 0.6) {
+                    biomes[i][j] = Biome.LAKE;
+                }
+
+                if (biomes[i][j] == Biome.PLAINS && osn.eval(i, j) < -0.25) {
+                    biomes[i][j] = Biome.FOREST;
+                }
+
+                if (biomes[i][j] == Biome.DESERT && osn.eval(i, j) > 0.75) {
+                    biomes[i][j] = Biome.OASIS;
+                }
+
+                if (biomes[i][j] == Biome.HIGH_MOUNTAIN && osn.eval(i, j) > 0.5) {
+                    biomes[i][j] = Biome.VOLCANO;
                 }
             }
         }
 
-        /*for (int i = 0; i < biomes.length; i++) {
+        for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.Lake) {
+                if (biomes[i][j] == Biome.LAKE || biomes[i][j] == Biome.OASIS) {
+                    if (biomes[i-1][j] == Biome.SEA || biomes[i+1][j] == Biome.SEA ||
+                            biomes[i][j-1] == Biome.SEA || biomes[i][j+1] == Biome.SEA)
+                        biomes[i][j] = Biome.SEA;
+                }
+            }
+        }
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (biomes[i][j] == Biome.LAKE) {
                     lake(i, j);
-                    biomes[i][j] = Biome.Lake;
+                    biomes[i][j] = Biome.LAKE;
                 }
             }
-        }*/
-    }
-
-    // working on it https://blog.habrador.com/2013/02/how-to-generate-random-terrain.html
-
-    private void generate2(int seed) {
-        biomes = new Biome[100][200];
-        heightmap = new float[100][200];
-
-        float[][] initHeightMap = new float[100][200];
-        Random r = new Random(seed);
-
-        raiseRandom(r, initHeightMap, 10, 20, 90, 180);
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                biomes[i][j] = Biome.Sea;
-            }
-        }
-
-        /*for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                initHeightMap[i][j] += 12*osn.eval(j / x_s, i / y_s);
-            }
-        }*/
-
-        float m = max(initHeightMap);
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                heightmap[i][j] = initHeightMap[i][j] / m;
-            }
-        }
-    }
-
-    private void raiseRandom(Random r, float[][] initHeightMap, int i1, int j1, int i2, int j2) {
-        if (Math.abs(i1 - i2) < 2 || Math.abs(j1 - j2) < 2)
-            return;
-
-        float m = (r.nextFloat() * 5 - 2) + Math.max(0, Math.min(10, 100 / dst((i1+i2)/2, (j1+j2)/2)));
-
-        //System.out.println(100 / dst((i1+i2)/2, (j1+j2)/2));
-
-        for (int i = i1; i < i2; i++) {
-            for (int j = j1; j < j2; j++) {
-                initHeightMap[i][j] += m;
-            }
-        }
-
-        raiseRandom(r, initHeightMap, i1+f(r), j1+f(r), (i1+i2)/2, (j1+j2)/2);
-        raiseRandom(r, initHeightMap, i1+f(r), (j1+j2)/2, (i1+i2)/2, j2+f(r));
-        raiseRandom(r, initHeightMap, (i1+i2)/2, j1+f(r), i2+f(r), (j1+j2)/2);
-        raiseRandom(r, initHeightMap, (i1+i2)/2, (j1+j2)/2, i2+f(r), j2+f(r));
-    }
-
-    private float dst(int i, int j) {
-        return (float) Math.sqrt((i - biomes.length / 2) * (i - biomes.length / 2) +
-                (j - biomes[0].length / 2) * (j - biomes[0].length / 2));
-    }
-
-    private int f(Random r) {
-        return r.nextInt(3) - 1;
-    }
-
-    /*private void lake(int i, int j) {
-        if (i < 0 || j < 0 || i >= biomes.length || j >= biomes[0].length) return;
-        if (biomes[i][j] == Biome.Sea || biomes[i][j] == Biome.Oasis ||
-                biomes[i][j] == Biome.Ice || biomes[i][j] == Biome.RIVER_EAST_WEST ||
-                biomes[i][j] == Biome.RIVER_NORTH_SOUTH) return;
-
-        double[] vals = new double[4];
-        vals[0] = osn.eval((j-1) / x_s, i / y_s);
-        vals[1] = osn.eval((j+1) / x_s, i / y_s);
-        vals[2] = osn.eval(j / x_s, (i-1) / y_s);
-        vals[3] = osn.eval(j / x_s, (i+1) / y_s);
-
-        Arrays.sort(vals);
-
-        if (osn.eval((j-1) / x_s, i / y_s) == vals[0]) {
-            biomes[i][j] = Biome.RIVER_EAST_WEST;
-            lake(i, j-1);
-            return;
-        }
-
-        if (osn.eval((j+1) / x_s, i / y_s) == vals[0]) {
-            biomes[i][j] = Biome.RIVER_EAST_WEST;
-            lake(i, j+1);
-            return;
-        }
-
-        if (osn.eval(j / x_s, (i-1) / y_s) == vals[0]) {
-            biomes[i][j] = Biome.RIVER_NORTH_SOUTH;
-            lake(i-1, j);
-            return;
-        }
-
-        if (osn.eval(j / x_s, (i+1) / y_s) == vals[0]) {
-            biomes[i][j] = Biome.RIVER_NORTH_SOUTH;
-            lake(i+1, j);
-            return;
         }
     }*/
 
-    private void flood(int i, int j) {
+    private void generate(int seed) {
+        int w = 150;
+        int h = 100;
+
+        biomes = new Biome[h][w];
+        heightmap = new float[h][w];
+        float[][] initHeightMap = new float[h][w];
+
+        Random r = new Random(seed);
+
+        int divisions = 5;
+
+        for (int i = 0; i < divisions; i++) {
+            for (int j = 0; j < divisions; j++) {
+                int top = i * (initHeightMap.length - 1) / divisions;
+                int bottom = (i+1) * (initHeightMap.length - 1) / divisions;
+                int left = j * (initHeightMap[0].length - 1) / divisions;
+                int right = (j+1) * (initHeightMap[0].length - 1) / divisions;
+
+                int centerX = (left + right) / 2;
+                int centerY = (top + bottom) / 2;
+
+                initHeightMap[centerY][centerX] = 20 * r.nextInt(2);
+
+                if (i > 0 && j > 0 && i < divisions - 1 && j < divisions - 1) {
+                    initHeightMap[top][left] = 20 * r.nextInt(2);
+                    initHeightMap[bottom][left] = 20 * r.nextInt(2);
+                    initHeightMap[top][right] = 20 * r.nextInt(2);
+                    initHeightMap[bottom][right] = 20 * r.nextInt(2);
+
+                    initHeightMap[top][centerX] = 20 * r.nextInt(2);
+                    initHeightMap[bottom][centerX] = 20 * r.nextInt(2);
+                    initHeightMap[centerY][left] = 20 * r.nextInt(2);
+                    initHeightMap[centerY][right] = 20 * r.nextInt(2);
+                }
+            }
+        }
+
+        for (int i = 0; i < divisions; i++) {
+            for (int j = 0; j < divisions; j++) {
+                int top = i * (initHeightMap.length - 1) / divisions;
+                int bottom = (i+1) * (initHeightMap.length - 1) / divisions;
+                int left = j * (initHeightMap[0].length - 1) / divisions;
+                int right = (j+1) * (initHeightMap[0].length - 1) / divisions;
+
+                int centerX = (left + right) / 2;
+                int centerY = (top + bottom) / 2;
+
+                step(initHeightMap, top, left, centerY, centerX);
+                step(initHeightMap, centerY, left, bottom, centerX);
+                step(initHeightMap, top, centerX, centerY, right);
+                step(initHeightMap, centerY, centerX, bottom, right);
+            }
+        }
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                initHeightMap[i][j] += 7*osn.eval(j / x_s, i / y_s);
+            }
+        }
+
+        float m1 = min(initHeightMap);
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                initHeightMap[i][j] -= m1;
+            }
+        }
+
+        float m2 = max(initHeightMap);
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                heightmap[i][j] = initHeightMap[i][j] / m2;
+            }
+        }
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (heightmap[i][j] > 0.45) {
+                    if (heightmap[i][j] < 0.75) {
+                        biomes[i][j] = Biome.PLAINS;
+                    } else {
+                        biomes[i][j] = Biome.MOUNTAIN;
+                    }
+                } else {
+                    biomes[i][j] = Biome.SEA;
+                }
+            }
+        }
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (biomes[i][j] == Biome.SEA) {
+                    if (!isOcean(i, j)) fillLakes(i, j);
+                }
+            }
+        }
+
+        for (int i = 0; i < biomes[0].length; i++) {
+            for (int j = 0; j < (eval(i / 4.0f, 0)+1) * 3 + 2; j++) {
+                biomes[j][i] = Biome.ICE;
+            }
+
+            for (int j = 0; j < (eval(i / 4.0f, biomes.length - 1) + 1) * 3 + 2; j++) {
+                biomes[biomes.length - j - 1][i] = Biome.ICE;
+            }
+        }
+
+        for (int i = 1; i < biomes.length-1; i++) {
+            for (int j = 1; j < biomes[0].length-1; j++) {
+                if (biomes[i][j] == Biome.MOUNTAIN &&
+                        (biomes[i-1][j] == Biome.MOUNTAIN || biomes[i-1][j] == Biome.HIGH_MOUNTAIN) &&
+                        (biomes[i+1][j] == Biome.MOUNTAIN || biomes[i+1][j] == Biome.HIGH_MOUNTAIN) &&
+                        (biomes[i][j-1] == Biome.MOUNTAIN || biomes[i][j-1] == Biome.HIGH_MOUNTAIN) &&
+                        (biomes[i][j+1] == Biome.MOUNTAIN || biomes[i][j+1] == Biome.HIGH_MOUNTAIN)) {
+                    biomes[i][j] = Biome.HIGH_MOUNTAIN;
+                }
+            }
+        }
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if ((biomes[i][j] == Biome.MOUNTAIN || biomes[i][j] == Biome.HIGH_MOUNTAIN) &&
+                        osn.eval(i, j) > 0.6) {
+                    createRiver(i, j);
+                    biomes[i][j] = Biome.MOUNTAIN;
+                }
+            }
+        }
+
+        for (int i = 5 * biomes.length / 11; i < 6 * biomes.length / 11; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (biomes[i][j] == Biome.PLAINS) {
+                    biomes[i][j] = Biome.DESERT;
+                }
+            }
+        }
+
+        for (int i = 0; i < biomes[0].length; i++) {
+            if (osn.eval(5 * biomes.length / 11, i / 3.0f) > 0 &&
+                    biomes[5 * biomes.length / 11][i] == Biome.DESERT) {
+                biomes[5 * biomes.length / 11][i] = Biome.PLAINS;
+            }
+
+            if (osn.eval(6 * biomes.length / 11, i / 3.0f) > 0 &&
+                    biomes[6 * biomes.length / 11 - 1][i] == Biome.DESERT) {
+                biomes[6 * biomes.length / 11 - 1][i] = Biome.PLAINS;
+            }
+        }
+
+        for (int i = 0; i < biomes.length / 11; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (biomes[i][j] == Biome.PLAINS) {
+                    biomes[i][j] = Biome.NORTH_TUNDRA;
+                }
+            }
+        }
+
+        for (int i = 10 * biomes.length / 11; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (biomes[i][j] == Biome.PLAINS) {
+                    biomes[i][j] = Biome.NORTH_TUNDRA;
+                }
+            }
+        }
+
+        for (int i = 0; i < biomes[0].length; i++) {
+            if (osn.eval(0, 5+i / 3.0f) > 0 &&
+                    biomes[biomes.length / 11 - 1][i] == Biome.NORTH_TUNDRA) {
+                biomes[biomes.length / 11 - 1][i] = Biome.PLAINS;
+            }
+
+            if (osn.eval(biomes.length, 5+i / 3.0f) > 0 &&
+                    biomes[10 * biomes.length / 11][i] == Biome.NORTH_TUNDRA) {
+                biomes[10 * biomes.length / 11][i] = Biome.PLAINS;
+            }
+        }
+
+        for (int i = 1; i < biomes.length - 1; i++) {
+            for (int j = 1; j < biomes[0].length - 1; j++) {
+                if (biomes[i][j] == Biome.PLAINS && osn.eval(i / 5.0f, j / 5.0f) > 0.5) {
+                    biomes[i][j] = Biome.FIELD;
+                }
+
+                if (biomes[i][j] == Biome.PLAINS && osn.eval(i, j) < -0.25) {
+                    biomes[i][j] = Biome.FOREST;
+                }
+
+                if (biomes[i][j] == Biome.DESERT && osn.eval(i, j) > 0.75 &&
+                        biomes[i-1][j] != Biome.SEA && biomes[i+1][j] != Biome.SEA &&
+                        biomes[i][j-1] != Biome.SEA && biomes[i][j+1] != Biome.SEA) {
+                    biomes[i][j] = Biome.OASIS;
+                }
+
+                if (biomes[i][j] == Biome.PLAINS && osn.eval(i, j) > 0.75 &&
+                        biomes[i-1][j] != Biome.SEA && biomes[i+1][j] != Biome.SEA &&
+                        biomes[i][j-1] != Biome.SEA && biomes[i][j+1] != Biome.SEA) {
+                    biomes[i][j] = Biome.LAKE;
+                }
+
+                if (biomes[i][j] == Biome.HIGH_MOUNTAIN && osn.eval(i, j) > 0.5) {
+                    biomes[i][j] = Biome.VOLCANO;
+                }
+            }
+        }
+    }
+
+    private void step(float[][] initHeightMap, int a, int b, int c, int d) {
+        if (a+1 >= c && b+1 >= d) return;
+
+        int centerX = (a+c) / 2;
+        int centerY = (b+d) / 2;
+
+        initHeightMap[a][centerY] = (initHeightMap[a][b] + initHeightMap[a][d]) / 2 + eval(a, centerY);
+        initHeightMap[c][centerY] = (initHeightMap[c][b] + initHeightMap[c][d]) / 2 + eval(c, centerY);
+        initHeightMap[centerX][b] = (initHeightMap[a][b] + initHeightMap[c][b]) / 2 + eval(centerX, b);
+        initHeightMap[centerX][d] = (initHeightMap[a][d] + initHeightMap[c][d]) / 2 + eval(centerX, d);
+
+        initHeightMap[centerX][centerY] = (initHeightMap[a][centerY] + initHeightMap[c][centerY] +
+                initHeightMap[centerX][b] + initHeightMap[centerX][d]) / 4 + eval(centerX, centerY);
+
+        step(initHeightMap, a, b, centerX, centerY);
+        step(initHeightMap, a, centerY, centerX, d);
+        step(initHeightMap, centerX, b, c, centerY);
+        step(initHeightMap, centerX, centerY, c, d);
+    }
+
+    private boolean isOcean(int i, int j) {
+        boolean res = isOceanH(i, j);
+
+        for (int a = 0; a < biomes.length; a++) {
+            for (int b = 0; b < biomes[0].length; b++) {
+                if (biomes[a][b] == Biome.TMP) biomes[a][b] = Biome.SEA;
+            }
+        }
+
+        return res;
+    }
+
+    private boolean isOceanH(int i, int j) {
+        if(i <= 0 || j <= 0 || i >= biomes.length-1 || j >= biomes[0].length-1) return true;
+
+        if(biomes[i][j] != Biome.SEA) return false;
+
+        biomes[i][j] = Biome.TMP;
+
+        if(isOceanH(i + 1, j)) return true;
+        if(isOceanH(i - 1, j)) return true;
+        if(isOceanH(i, j + 1)) return true;
+        if(isOceanH(i, j - 1)) return true;
+
+        return false;
+    }
+
+    private void fillLakes(int i, int j) {
         if(i < 0 || j < 0 || i >= biomes.length || j >= biomes[0].length) return;
-        if (biomes[i][j] == Biome.Sea) return;
+        if(biomes[i][j] != Biome.SEA) return;
 
-        biomes[i][j] = Biome.Sea;
+        biomes[i][j] = Biome.LAKE;
 
-        flood(i + 1, j);
-        flood(i - 1, j);
-        flood(i, j + 1);
-        flood(i, j - 1);
+        fillLakes(i-1, j);
+        fillLakes(i+1, j);
+        fillLakes(i, j-1);
+        fillLakes(i, j+1);
+    }
+
+    private void createRiver(int i, int j) {
+        if (i < 1 || j < 1 || i >= biomes.length-1 || j >= biomes[0].length-1) return;
+        if (biomes[i][j] == Biome.SEA || biomes[i][j] == Biome.OASIS || biomes[i][j] == Biome.LAKE ||
+                biomes[i][j] == Biome.ICE || biomes[i][j] == Biome.RIVER_EAST_WEST ||
+                biomes[i][j] == Biome.RIVER_NORTH_SOUTH) return;
+
+        double[] vals = new double[4];
+        vals[0] = heightmap[i-1][j];
+        vals[1] = heightmap[i+1][j];
+        vals[2] = heightmap[i][j-1];
+        vals[3] = heightmap[i][j+1];
+
+        Arrays.sort(vals);
+
+        if (vals[0] > heightmap[i][j]) {
+            biomes[i][j] = Biome.LAKE;
+            return;
+        }
+
+        if (heightmap[i-1][j] == vals[0]) {
+            biomes[i][j] = Biome.RIVER_NORTH_SOUTH;
+            createRiver(i-1, j);
+            return;
+        }
+
+        if (heightmap[i+1][j] == vals[0]) {
+            biomes[i][j] = Biome.RIVER_NORTH_SOUTH;
+            createRiver(i+1, j);
+            return;
+        }
+
+        if (heightmap[i][j-1] == vals[0]) {
+            biomes[i][j] = Biome.RIVER_EAST_WEST;
+            createRiver(i, j-1);
+            return;
+        }
+
+        if (heightmap[i][j+1] == vals[0]) {
+            biomes[i][j] = Biome.RIVER_EAST_WEST;
+            createRiver(i, j+1);
+            return;
+        }
     }
 
     public void loadWorld(char[][] charBuffer, Color[][] fontColorBuffer) {
@@ -367,8 +566,20 @@ public class World {
         return max;
     }
 
-    private double eval(double a, double b) {
-        return osn.eval(a, b);
+    private float min(float[][] heightmap) {
+        float min = Integer.MAX_VALUE;
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                min = Math.min(min, heightmap[i][j]);
+            }
+        }
+
+        return min;
+    }
+
+    private float eval(double a, double b) {
+        return (float) osn.eval(a / 4, b / 4);
     }
 
     public String getSelectedInfo() {
