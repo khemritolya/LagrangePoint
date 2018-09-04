@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import java.util.List;
+
 
 public class Canvas {
     private static final char BORDER_CHAR = '=';
@@ -18,6 +20,8 @@ public class Canvas {
 
     private BitmapFont f;
 
+    public int optionSelected;
+
     public Canvas(BitmapFont f) {
         this.f = f;
 
@@ -27,6 +31,8 @@ public class Canvas {
                 [(int) (Gdx.graphics.getWidth() / f.getSpaceWidth())];
         backColorBuffer = new Color[(int) (Gdx.graphics.getHeight() / f.getLineHeight())]
                 [(int) (Gdx.graphics.getWidth() / f.getSpaceWidth())];
+
+        optionSelected = 0;
     }
 
     public void generateBuffer(World world) {
@@ -42,7 +48,7 @@ public class Canvas {
         loadString(world.getSelectedInfo(), 6, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
 
         loadString("\'m\' to cycle mapmode", 8, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
-        loadString("\'q\' for help page", 9, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString("\'q\' for map legend page", 9, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
 
 
         for (int i = 0; i < charBuffer.length; i++) {
@@ -98,9 +104,42 @@ public class Canvas {
                 charBuffer[0].length / 2 - "<< P A U S E D >>".length() / 2,
                 Color.WHITE, Color.BLACK);
 
-        loadString("Press ENTER to continue...", charBuffer.length / 2,
-                charBuffer[0].length / 2 - "Press ENTER to continue.".length() / 2,
+        loadString("Press ESCAPE to continue...", charBuffer.length / 2,
+                charBuffer[0].length / 2 - "Press ESCAPE to continue.".length() / 2,
                 Color.GRAY, Color.BLACK);
+        loadString("Press ENTER to select...", charBuffer.length / 2 + 1,
+                charBuffer[0].length / 2 - "Press ENTER to select...".length() / 2,
+                Color.GRAY, Color.BLACK);
+
+        loadString("New game", charBuffer.length / 2 + 5, charBuffer[0].length / 2 - 4,
+                Color.WHITE, Color.BLACK);
+
+        loadString("Save game", charBuffer.length / 2 + 6, charBuffer[0].length / 2 - 4,
+                Color.WHITE, Color.BLACK);
+
+        loadString("Load game", charBuffer.length / 2 + 7, charBuffer[0].length / 2 - 4
+                , Color.WHITE, Color.BLACK);
+
+        loadString("Quit game", charBuffer.length / 2 + 8, charBuffer[0].length / 2 - 4,
+                Color.WHITE, Color.BLACK);
+
+        if (optionSelected == 0) {
+            charBuffer[charBuffer.length / 2 + 5][charBuffer[0].length / 2 - 6] = '*';
+            fontColorBuffer[charBuffer.length / 2 + 5][charBuffer[0].length / 2 - 6] =
+                    Color.WHITE;
+        } else if (optionSelected == 1) {
+            charBuffer[charBuffer.length / 2 + 6][charBuffer[0].length / 2 - 6] = '*';
+            fontColorBuffer[charBuffer.length / 2 + 6][charBuffer[0].length / 2 - 6] =
+                    Color.WHITE;
+        } else if (optionSelected == 2) {
+            charBuffer[charBuffer.length / 2 + 7][charBuffer[0].length / 2 - 6] = '*';
+            fontColorBuffer[charBuffer.length / 2 + 7][charBuffer[0].length / 2 - 6] =
+                    Color.WHITE;
+        } else if (optionSelected == 3) {
+            charBuffer[charBuffer.length / 2 + 8][charBuffer[0].length / 2 - 6] = '*';
+            fontColorBuffer[charBuffer.length / 2 + 8][charBuffer[0].length / 2 - 6] =
+                    Color.WHITE;
+        }
 
         generateBorder();
     }
@@ -130,6 +169,64 @@ public class Canvas {
         loadBiomeAndInfo(Biome.NORTH_TUNDRA, 24, 2, Color.WHITE, Color.BLACK);
         loadBiomeAndInfo(Biome.ICE, 25, 2, Color.WHITE, Color.BLACK);
 
+        generateBorder();
+    }
+
+
+    public void generateNewGameBuffer() {
+        clear();
+
+        loadString("Lagrange Point Map Generation Page Version I",2,2, Color.WHITE, Color.BLACK);
+        loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
+
+        loadString("New Game Name: ", 5, 2, Color.WHITE, Color.BLACK);
+        loadString(Window.w.inputBuffer, 6, 2, Color.WHITE, Color.BLACK);
+
+        charBuffer[6][2 + Window.w.inputBuffer.length()] = '_';
+        fontColorBuffer[6][2 + Window.w.inputBuffer.length()] = Color.WHITE;
+
+        generateBorder();
+    }
+
+    public void generateSaveGameBuffer() {
+        clear();
+
+        loadString("Lagrange Point Map Generation Page Version I",2,2, Color.WHITE, Color.BLACK);
+        loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
+
+        loadString("Save Game Name: ", 5, 2, Color.WHITE, Color.BLACK);
+        loadString(Window.w.inputBuffer, 6, 2, Color.WHITE, Color.BLACK);
+
+        charBuffer[6][2 + Window.w.inputBuffer.length()] = '_';
+        fontColorBuffer[6][2 + Window.w.inputBuffer.length()] = Color.WHITE;
+
+        generateBorder();
+    }
+
+    public void generateLoadGameBuffer(List<String> saves) {
+        clear();
+
+        loadString("Lagrange Point Map Generation Page Version I",2,2, Color.WHITE, Color.BLACK);
+        loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
+
+        if (saves.size() > 1) {
+            loadString("Available saves: ", 5, 2, Color.WHITE, Color.BLACK);
+
+            for (int i = 1; i < saves.size(); i++) {
+                loadString(saves.get(i), 5 + i, 2, Color.WHITE, Color.BLACK);
+            }
+
+            loadString("Load Game Name: ", saves.size() + 6, 2, Color.WHITE, Color.BLACK);
+            loadString(Window.w.inputBuffer, saves.size() + 7, 2, Color.WHITE, Color.BLACK);
+
+            charBuffer[saves.size() + 7][2 + Window.w.inputBuffer.length()] = '_';
+            fontColorBuffer[saves.size() + 7][2 + Window.w.inputBuffer.length()] = Color.WHITE;
+
+        } else {
+            loadString("No available saves to load!", 5, 2, Color.WHITE, Color.BLACK);
+            loadString("Press ESCAPE to go back!", 6, 2, Color.WHITE, Color.BLACK);
+
+        }
         generateBorder();
     }
 

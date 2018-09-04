@@ -25,4 +25,12 @@ public enum Biome {
         sigchar = s;
         sigcolor = c;
     }
+
+    public static int getIDByBiome(Biome b) {
+        for (int i = 0; i < Biome.values().length; i++) {
+            if(Biome.values()[i] == b) return i;
+        }
+
+        return -1;
+    }
 }

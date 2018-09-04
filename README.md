@@ -1,12 +1,14 @@
-### Lagrange Point Readme
+# Lagrange Point v0.01
 
-A planetary invasion game from the opposite side. Still very WIP.
+##### A planetary invasion game from the opposite side. Still very WIP.
 
 Developer:
 
-Khemri Tolya
+- Khemri Tolya
 
 With help from:
 
-Mr. Lepper
-Mr. Sours
+- Ben Lepper
+- Mr. Sours
+
+Development Discord: https://discord.gg/M2ggfAR

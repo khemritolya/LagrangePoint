@@ -2,7 +2,9 @@ package com.kti.lagrange;
 
 import com.badlogic.gdx.graphics.Color;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class World {
@@ -284,7 +286,7 @@ public class World {
             }
         }
 
-        for (int i = 0; i < biomes.length; i++) {
+        /*for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
                 if ((biomes[i][j] == Biome.MOUNTAIN || biomes[i][j] == Biome.HIGH_MOUNTAIN) &&
                         osn.eval(i, j) > 0.6) {
@@ -292,7 +294,7 @@ public class World {
                     biomes[i][j] = Biome.MOUNTAIN;
                 }
             }
-        }
+        }*/
 
         for (int i = 5 * biomes.length / 11; i < 6 * biomes.length / 11; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
@@ -580,6 +582,20 @@ public class World {
 
     private float eval(double a, double b) {
         return (float) osn.eval(a / 4, b / 4);
+    }
+
+    public List<String> getAsStringList() {
+        List<String> out = new ArrayList<>();
+
+        out.add(biomes.length + "x" + biomes[0].length);
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                out.add(Biome.getIDByBiome(biomes[i][j]) + ":" + heightmap[i][j]);
+            }
+        }
+
+        return out;
     }
 
     public String getSelectedInfo() {
