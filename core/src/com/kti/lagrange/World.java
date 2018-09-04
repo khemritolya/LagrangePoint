@@ -50,6 +50,30 @@ public class World {
         mapmode = 0;
     }
 
+    public World(String name, Biome[][] biomes, float[][] heightmap) {
+        this.name  = name;
+
+        this.biomes = biomes;
+        this.heightmap = heightmap;
+
+        x = 1;
+        y = 1;
+
+        selX = (Window.w.getCanvas().getBufferX() - 30) / 2;
+        selY = Window.w.getCanvas().getBufferY() / 2;
+
+        if (selX < 0) selX = 0;
+        if (selX >= biomes[0].length) selX = biomes[0].length - 1;
+
+        if (selY < 0) selY = 0;
+        if (selY >= biomes.length) selY = biomes.length - 1;
+
+        mbX = 0;
+        mbY = 0;
+
+        mapmode = 0;
+    }
+
     /*
     So that posterity may see my humble beggingins!
 
@@ -587,6 +611,7 @@ public class World {
     public List<String> getAsStringList() {
         List<String> out = new ArrayList<>();
 
+        out.add(name);
         out.add(biomes.length + "x" + biomes[0].length);
 
         for (int i = 0; i < biomes.length; i++) {

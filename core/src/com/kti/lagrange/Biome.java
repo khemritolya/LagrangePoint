@@ -33,4 +33,8 @@ public enum Biome {
 
         return -1;
     }
+
+    public static Biome getBiomeByID(int id) {
+        return Biome.values()[id];
+    }
 }

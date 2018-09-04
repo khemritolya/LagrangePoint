@@ -204,11 +204,8 @@ public class Window extends ApplicationAdapter {
                 localsaves = FileManipulator.getSaves();
 
                 if (localsaves.contains(inputBuffer) && !inputBuffer.equals("save")) {
-                    //FileManipulator.save(world, inputBuffer);
-
-                    System.out.println("Success!");
-
-                    //state = GAME;
+                    world = FileManipulator.load(inputBuffer);
+                    state = GAME;
                 }
             }
         }

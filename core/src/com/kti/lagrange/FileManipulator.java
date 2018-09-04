@@ -1,6 +1,7 @@
 package com.kti.lagrange;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +27,6 @@ public class FileManipulator {
             }
 
             List<String> worldAsStringList = world.getAsStringList();
-            worldAsStringList.add(0, filename);
 
             Files.write(f, worldAsStringList, Charset.forName("ASCII"), StandardOpenOption.CREATE);
         } catch (Exception e) {
@@ -53,5 +53,40 @@ public class FileManipulator {
         }
 
         return out;
+    }
+
+    public static World load(String filename) {
+        World world = null;
+
+        try {
+            Path f = Paths.get("save/" + filename);
+            if (!Files.exists(f)) throw new IOException("Could not find save file " + filename);
+
+            List<String> l = Files.readAllLines(f);
+
+            String name = l.get(0);
+            int h = Integer.parseInt(l.get(1).split("x")[0]);
+            int w = Integer.parseInt(l.get(1).split("x")[1]);
+
+            Biome[][] biomes = new Biome[h][w];
+            float[][] heightmap = new float[h][w];
+
+            int iter = 2;
+
+            for (int i = 0; i < h; i++) {
+                for (int j = 0; j < w; j++) {
+                    biomes[i][j] = Biome.getBiomeByID(Integer.parseInt(l.get(iter).split(":")[0]));
+                    heightmap[i][j] = Float.parseFloat(l.get(iter).split(":")[1]);
+                    iter++;
+                }
+            }
+
+
+            world = new World(name, biomes, heightmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return world;
     }
 }
