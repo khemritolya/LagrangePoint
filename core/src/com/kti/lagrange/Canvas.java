@@ -110,34 +110,37 @@ public class Canvas {
         loadString("Press ENTER to select...", charBuffer.length / 2 + 1,
                 charBuffer[0].length / 2 - "Press ENTER to select...".length() / 2,
                 Color.GRAY, Color.BLACK);
+        loadString("Use ARROWS to move selection...", charBuffer.length / 2 + 2,
+                charBuffer[0].length / 2 - "Use ARROWS to move selection".length() / 2,
+                Color.GRAY, Color.BLACK);
 
-        loadString("New game", charBuffer.length / 2 + 5, charBuffer[0].length / 2 - 4,
+        loadString("New game", charBuffer.length / 2 + 6, charBuffer[0].length / 2 - 4,
                 Color.WHITE, Color.BLACK);
 
-        loadString("Save game", charBuffer.length / 2 + 6, charBuffer[0].length / 2 - 4,
+        loadString("Save game", charBuffer.length / 2 + 7, charBuffer[0].length / 2 - 4,
                 Color.WHITE, Color.BLACK);
 
-        loadString("Load game", charBuffer.length / 2 + 7, charBuffer[0].length / 2 - 4
+        loadString("Load game", charBuffer.length / 2 + 8, charBuffer[0].length / 2 - 4
                 , Color.WHITE, Color.BLACK);
 
-        loadString("Quit game", charBuffer.length / 2 + 8, charBuffer[0].length / 2 - 4,
+        loadString("Quit game", charBuffer.length / 2 + 9, charBuffer[0].length / 2 - 4,
                 Color.WHITE, Color.BLACK);
 
         if (optionSelected == 0) {
-            charBuffer[charBuffer.length / 2 + 5][charBuffer[0].length / 2 - 6] = '*';
-            fontColorBuffer[charBuffer.length / 2 + 5][charBuffer[0].length / 2 - 6] =
-                    Color.WHITE;
-        } else if (optionSelected == 1) {
             charBuffer[charBuffer.length / 2 + 6][charBuffer[0].length / 2 - 6] = '*';
             fontColorBuffer[charBuffer.length / 2 + 6][charBuffer[0].length / 2 - 6] =
                     Color.WHITE;
-        } else if (optionSelected == 2) {
+        } else if (optionSelected == 1) {
             charBuffer[charBuffer.length / 2 + 7][charBuffer[0].length / 2 - 6] = '*';
             fontColorBuffer[charBuffer.length / 2 + 7][charBuffer[0].length / 2 - 6] =
                     Color.WHITE;
-        } else if (optionSelected == 3) {
+        } else if (optionSelected == 2) {
             charBuffer[charBuffer.length / 2 + 8][charBuffer[0].length / 2 - 6] = '*';
             fontColorBuffer[charBuffer.length / 2 + 8][charBuffer[0].length / 2 - 6] =
+                    Color.WHITE;
+        } else if (optionSelected == 3) {
+            charBuffer[charBuffer.length / 2 + 9][charBuffer[0].length / 2 - 6] = '*';
+            fontColorBuffer[charBuffer.length / 2 + 9][charBuffer[0].length / 2 - 6] =
                     Color.WHITE;
         }
 
@@ -147,7 +150,7 @@ public class Canvas {
     public void generateHelpBuffer() {
         clear();
 
-        loadString("Lagrange Point Map Help Page Version I",2,2, Color.WHITE, Color.BLACK);
+        loadString("Lagrange Point Map Legent / Help Page",2,2, Color.WHITE, Color.BLACK);
         loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
         loadString("\'ESC\' to return to game",5,2, Color.WHITE, Color.BLACK);
 
@@ -176,7 +179,7 @@ public class Canvas {
     public void generateNewGameBuffer() {
         clear();
 
-        loadString("Lagrange Point Map Generation Page Version I",2,2, Color.WHITE, Color.BLACK);
+        loadString("Lagrange Point Map Generation Page",2,2, Color.WHITE, Color.BLACK);
         loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
 
         loadString("New Game Name: ", 5, 2, Color.WHITE, Color.BLACK);
@@ -191,7 +194,7 @@ public class Canvas {
     public void generateSaveGameBuffer() {
         clear();
 
-        loadString("Lagrange Point Map Generation Page Version I",2,2, Color.WHITE, Color.BLACK);
+        loadString("Lagrange Point Map Save Page",2,2, Color.WHITE, Color.BLACK);
         loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
 
         loadString("Save Game Name: ", 5, 2, Color.WHITE, Color.BLACK);
@@ -206,7 +209,7 @@ public class Canvas {
     public void generateLoadGameBuffer(List<String> saves) {
         clear();
 
-        loadString("Lagrange Point Map Generation Page Version I",2,2, Color.WHITE, Color.BLACK);
+        loadString("Lagrange Point Map Load Page",2,2, Color.WHITE, Color.BLACK);
         loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
 
         if (saves.size() > 1) {

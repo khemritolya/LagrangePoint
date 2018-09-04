@@ -59,7 +59,7 @@ public class Window extends ApplicationAdapter {
 
 		try {
 			sound = Gdx.audio.newSound(Gdx.files.internal("assets/audio.mp3"));
-			soundID = sound.play(0.0f);
+			soundID = sound.play(0.5f);
 			if (soundID == -1) throw new IOException("Could not init music properly");
 			sound.setLooping(soundID, true);
 		} catch (Exception e) {
@@ -67,7 +67,6 @@ public class Window extends ApplicationAdapter {
 		}
 
 		canvas = new Canvas(font);
-		//world = new World(666);
 
 		batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
