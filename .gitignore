@@ -7,10 +7,8 @@ desktop/build/
 desktop/out/
 assets.zip
 LagrangePoint.iml
-gradle.*
-settings.gradle
 gradlew
-build.gradle
 gradle/
 gradlew.bat
 save/
+log.txt

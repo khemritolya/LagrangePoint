@@ -182,12 +182,13 @@ public class Canvas {
         loadString("Lagrange Point Map Generation Page",2,2, Color.WHITE, Color.BLACK);
         loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
 
-        loadString("New Game Name: ", 5, 2, Color.WHITE, Color.BLACK);
+        loadString("New Game Seed: ", 5, 2, Color.WHITE, Color.BLACK);
         loadString(Window.w.inputBuffer, 6, 2, Color.WHITE, Color.BLACK);
 
-        charBuffer[6][2 + Window.w.inputBuffer.length()] = '_';
-        fontColorBuffer[6][2 + Window.w.inputBuffer.length()] = Color.WHITE;
-
+        if (Window.w.getFrame() / 25 % 2 == 0) {
+            charBuffer[6][2 + Window.w.inputBuffer.length()] = '_';
+            fontColorBuffer[6][2 + Window.w.inputBuffer.length()] = Color.WHITE;
+        }
         generateBorder();
     }
 
@@ -200,9 +201,10 @@ public class Canvas {
         loadString("Save Game Name: ", 5, 2, Color.WHITE, Color.BLACK);
         loadString(Window.w.inputBuffer, 6, 2, Color.WHITE, Color.BLACK);
 
-        charBuffer[6][2 + Window.w.inputBuffer.length()] = '_';
-        fontColorBuffer[6][2 + Window.w.inputBuffer.length()] = Color.WHITE;
-
+        if (Window.w.getFrame() / 25 % 2 == 0) {
+            charBuffer[6][2 + Window.w.inputBuffer.length()] = '_';
+            fontColorBuffer[6][2 + Window.w.inputBuffer.length()] = Color.WHITE;
+        }
         generateBorder();
     }
 
@@ -222,9 +224,11 @@ public class Canvas {
             loadString("Load Game Name: ", saves.size() + 6, 2, Color.WHITE, Color.BLACK);
             loadString(Window.w.inputBuffer, saves.size() + 7, 2, Color.WHITE, Color.BLACK);
 
-            charBuffer[saves.size() + 7][2 + Window.w.inputBuffer.length()] = '_';
-            fontColorBuffer[saves.size() + 7][2 + Window.w.inputBuffer.length()] = Color.WHITE;
+            if (Window.w.getFrame() / 25 % 2 == 0) {
+                charBuffer[saves.size() + 7][2 + Window.w.inputBuffer.length()] = '_';
+                fontColorBuffer[saves.size() + 7][2 + Window.w.inputBuffer.length()] = Color.WHITE;
 
+            }
         } else {
             loadString("No available saves to load!", 5, 2, Color.WHITE, Color.BLACK);
             loadString("Press ESCAPE to go back!", 6, 2, Color.WHITE, Color.BLACK);
@@ -254,10 +258,11 @@ public class Canvas {
             backColorBuffer[i][charBuffer[0].length - 1] = BORDER_BACK_COLOR;
         }
 
-        loadString("< Lagrange Point FPS " + Window.w.averageFPS() + " FRAME " + charBuffer.length + "x" +
-                charBuffer[0].length + " >", 0, charBuffer[0].length / 2 - ("< Lagrange Point FPS "
-                + Window.w.averageFPS() + " FRAME " + charBuffer.length + "x" + charBuffer[0].length + " >").length()
-                / 2, Color.BLACK, Color.LIGHT_GRAY);
+        loadString("< Lagrange Point "+ charBuffer.length + "x" + charBuffer[0].length +" FPS " +
+                Window.w.averageFPS() + " FRAME " + Window.w.getFrame() + " >", 0,
+                charBuffer[0].length / 2 - ("< Lagrange Point "+ charBuffer.length + "x" +
+                        charBuffer[0].length +" FPS " + Window.w.averageFPS() + " FRAME " + Window.w.getFrame() +
+                        " >").length() / 2, Color.BLACK, Color.LIGHT_GRAY);
     }
 
     public void renderBackground(ShapeRenderer r) {

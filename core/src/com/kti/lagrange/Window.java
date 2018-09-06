@@ -26,6 +26,7 @@ public class Window extends ApplicationAdapter {
 	public static float WIN_WIDTH, WIN_HEIGHT;
 
 	private long[] lastFrameTimes;
+	private long frame;
 
 	private Sound sound;
 	private long soundID;
@@ -43,6 +44,7 @@ public class Window extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+	    System.out.println("Begging to load assets...");
 		w = this;
 
 		lastFrameTimes = new long[10];
@@ -72,12 +74,16 @@ public class Window extends ApplicationAdapter {
 		shapeRenderer = new ShapeRenderer();
 
 		state = 0;
+        frame = 0;
 		inputBuffer = new String();
+
+		System.out.println("Done Lagrange Point init!");
 	}
 
 	@Override
 	public void render () {
-		updatesFrameTimes();
+		frame++;
+	    updatesFrameTimes();
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -175,7 +181,9 @@ public class Window extends ApplicationAdapter {
                 inputBuffer = inputBuffer.substring(0, inputBuffer.length() - 1);
 
             if (Gdx.input.isKeyJustPressed(ENTER)) {
+				System.out.println("Creating new world with seed " + inputBuffer);
                 world = new World(inputBuffer.hashCode());
+
                 state = GAME;
             }
 		} else if (state == SAVE_GAME) {
@@ -187,7 +195,8 @@ public class Window extends ApplicationAdapter {
                 inputBuffer = inputBuffer.substring(0, inputBuffer.length() - 1);
 
             if (Gdx.input.isKeyJustPressed(ENTER)) {
-                FileManipulator.save(world, inputBuffer);
+				System.out.println("Saving a world with name " + inputBuffer);
+				FileManipulator.save(world, inputBuffer);
 
                 state = GAME;
             }
@@ -203,7 +212,9 @@ public class Window extends ApplicationAdapter {
                 localsaves = FileManipulator.getSaves();
 
                 if (localsaves.contains(inputBuffer) && !inputBuffer.equals("save")) {
-                    world = FileManipulator.load(inputBuffer);
+					System.out.println("Loading a world with name " + inputBuffer);
+					world = FileManipulator.load(inputBuffer);
+
                     state = GAME;
                 }
             }
@@ -311,4 +322,8 @@ public class Window extends ApplicationAdapter {
 	public Canvas getCanvas() {
 		return canvas;
 	}
+
+	public long getFrame() {
+	    return frame;
+    }
 }

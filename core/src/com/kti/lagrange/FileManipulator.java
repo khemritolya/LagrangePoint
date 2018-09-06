@@ -81,7 +81,6 @@ public class FileManipulator {
                 }
             }
 
-
             world = new World(name, biomes, heightmap);
         } catch (Exception e) {
             e.printStackTrace();

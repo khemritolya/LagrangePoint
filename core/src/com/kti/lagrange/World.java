@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Random;
 
 public class World {
-    private static final float SHORE_HEIGHT = 0.3f;
-    private static final float MNTN_HEIGHT = 0.65f;
-
     private static final float x_s = 15f;
     private static final float y_s = 10f;
     private static OpenSimplexNoise osn;
@@ -320,7 +317,11 @@ public class World {
             }
         }*/
 
-        for (int i = 5 * biomes.length / 11; i < 6 * biomes.length / 11; i++) {
+        int ddvis = r.nextInt(10) * 2 + 3;
+        int ddvis_min = (ddvis / 2) * biomes.length / ddvis;
+        int ddvis_max = (ddvis / 2 + 1) * biomes.length / ddvis;
+
+        for (int i = ddvis_min; i < ddvis_max; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
                 if (biomes[i][j] == Biome.PLAINS) {
                     biomes[i][j] = Biome.DESERT;
@@ -329,14 +330,14 @@ public class World {
         }
 
         for (int i = 0; i < biomes[0].length; i++) {
-            if (osn.eval(5 * biomes.length / 11, i / 3.0f) > 0 &&
-                    biomes[5 * biomes.length / 11][i] == Biome.DESERT) {
-                biomes[5 * biomes.length / 11][i] = Biome.PLAINS;
+            if (osn.eval(ddvis_min, i / 3.0f) > 0 &&
+                    biomes[ddvis_min][i] == Biome.DESERT) {
+                biomes[ddvis_min][i] = Biome.PLAINS;
             }
 
-            if (osn.eval(6 * biomes.length / 11, i / 3.0f) > 0 &&
-                    biomes[6 * biomes.length / 11 - 1][i] == Biome.DESERT) {
-                biomes[6 * biomes.length / 11 - 1][i] = Biome.PLAINS;
+            if (osn.eval(ddvis_max, i / 3.0f) > 0 &&
+                    biomes[ddvis_max - 1][i] == Biome.DESERT) {
+                biomes[ddvis_max - 1][i] = Biome.PLAINS;
             }
         }
 
@@ -508,14 +509,6 @@ public class World {
         }
     }
 
-    /*public void loadMiniMap(char[][] charBuffer, Color[][] fontColorBuffer) {
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 28; j++) {
-                put2(charBuffer, fontColorBuffer, i, j);
-            }
-        }
-    }*/
-
     private void put(char[][] charBuffer, Color[][] fontColorBuffer, int i, int j) {
         if (i+y < 0 || j+x < 0 || i+y >= charBuffer.length || j+x >= charBuffer[0].length - 30) return;
 
@@ -533,12 +526,24 @@ public class World {
         }
     }
 
-    /*private void put2(char[][] charBuffer, Color[][] fontColorBuffer, int i, int j) {
+    /*
+
+    public void loadMiniMap(char[][] charBuffer, Color[][] fontColorBuffer) {
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 28; j++) {
+                put2(charBuffer, fontColorBuffer, i, j);
+            }
+        }
+    }
+
+    private void put2(char[][] charBuffer, Color[][] fontColorBuffer, int i, int j) {
         charBuffer[charBuffer.length - 16 + i][charBuffer[0].length - 29 + j] =
                 biomes[i * biomes.length / 15][j * biomes[0].length / 28].sigchar;
         fontColorBuffer[charBuffer.length - 16 + i][charBuffer[0].length - 29 + j] =
                 biomes[i * biomes.length / 15][j * biomes[0].length / 28].sigcolor;
-    }*/
+    }
+
+    */
 
     public void dx(int dx) {
         if (mbX >= 2) {
@@ -631,11 +636,11 @@ public class World {
         return name;
     }
 
-    public void setMapmode(int m) {
-        mapmode = m;
-    }
-
     public int getMapmode() {
         return mapmode;
+    }
+
+    public void setMapmode(int m) {
+        mapmode = m;
     }
 }

@@ -7,7 +7,7 @@ public enum Biome {
     MOUNTAIN("Mountain", '^', Color.GRAY), HIGH_MOUNTAIN("Peak", '^', Color.LIGHT_GRAY),
     ICE("Ice Shelf", '+', Color.WHITE), LAKE("Lake", '~', Color.CYAN), DESERT("Desert", '-', Color.GOLDENROD),
     FOREST("Forest", '#', CC.ALMOST_DARK_GREEN), VOLCANO("Volcano", '^', Color.RED),
-    FIELD("Fertile Land", 'm', Color.YELLOW), NORTH_TUNDRA("Tundra", '-', Color.LIGHT_GRAY),
+    FIELD("Fertile Land", 'm', Color.GOLDENROD), NORTH_TUNDRA("Tundra", '-', Color.LIGHT_GRAY),
     RIVER_EAST_WEST("River", '-', Color.CYAN), RIVER_NORTH_SOUTH("River", '|', Color.CYAN),
     TMP("ERROR", '$', Color.RED);
 
