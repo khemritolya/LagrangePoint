@@ -12,3 +12,12 @@ With help from:
 - Mr. Sours
 
 Development Discord: https://discord.gg/M2ggfAR
+
+#### Instructions:
+
+1. Create a new world.
+2. Use arrow keys to move screen center around
+3. Use ESC to return to menu and access save/load
+4. Win
+5. ...
+6. Profit?

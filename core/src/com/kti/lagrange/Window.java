@@ -36,14 +36,21 @@ public class Window extends ApplicationAdapter {
 	private static final int GAME = 2;
 	private static final int MAP_HELP = 3;
 	private static final int NEW_GAME = 4;
-	private static final int SAVE_GAME = 5;
-	private static final int LOAD_GAME = 6;
+	private static final int NEW_GAME_2 = 5;
+	private static final int SAVE_GAME = 6;
+	private static final int LOAD_GAME = 7;
 	private int state;
 	private List<String> localsaves;
 	public String inputBuffer;
 
+	/**
+	 * This method handles all initialization of the core components
+	 *
+	 * TODO move to a more dynamic loading system, maybe with a progress bar?
+	 */
 	@Override
 	public void create () {
+		// Yes it started loading...!
 	    System.out.println("Begging to load assets...");
 		w = this;
 
@@ -52,6 +59,7 @@ public class Window extends ApplicationAdapter {
 		WIN_WIDTH = Gdx.graphics.getWidth();
 		WIN_HEIGHT = Gdx.graphics.getHeight();
 
+		// Load up the font
 		FreeTypeFontGenerator f = new FreeTypeFontGenerator(Gdx.files.absolute("assets/font.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter ftfp = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		ftfp.size = 12;
@@ -59,6 +67,8 @@ public class Window extends ApplicationAdapter {
 		font.setUseIntegerPositions(false);
 		f.dispose();
 
+		// Load up audio
+		// This is slow! See TODO
 		try {
 			sound = Gdx.audio.newSound(Gdx.files.internal("assets/audio.mp3"));
 			soundID = sound.play(0.5f);
@@ -68,26 +78,36 @@ public class Window extends ApplicationAdapter {
 			e.printStackTrace();
 		}
 
+		// Init render things
 		canvas = new Canvas(font);
-
 		batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
 
+		// set up the state of the window
 		state = 0;
         frame = 0;
 		inputBuffer = new String();
 
+		// 3...2...1 we are live
 		System.out.println("Done Lagrange Point init!");
 	}
 
+	/**
+	 * This method handles all rendering after init
+	 *
+	 * TODO move loading stuff here
+	 */
 	@Override
 	public void render () {
+		// Update FPS et al.
 		frame++;
 	    updatesFrameTimes();
 
+	    // Just OpenGL things
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		// Determine type of thing we should draw
 		if (state == INTRO) {
 			canvas.generateIntroBuffer();
 		} else if (state == PAUSE) {
@@ -98,12 +118,15 @@ public class Window extends ApplicationAdapter {
 		    canvas.generateHelpBuffer();
         } else if (state == NEW_GAME) {
 		    canvas.generateNewGameBuffer();
-        } else if (state == SAVE_GAME) {
+        } else if (state == NEW_GAME_2) {
+			canvas.generateNewGame2Buffer();
+		} else if (state == SAVE_GAME) {
 		    canvas.generateSaveGameBuffer();
         } else if (state == LOAD_GAME) {
             canvas.generateLoadGameBuffer(localsaves);
         }
 
+        // Actually render that thing after generating its buffer
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		canvas.renderBackground(shapeRenderer);
 		shapeRenderer.end();
@@ -112,9 +135,10 @@ public class Window extends ApplicationAdapter {
 		canvas.renderText(batch);
 		batch.end();
 
+		// always have an emergency exit button :)
 		if (Gdx.input.isKeyPressed(TAB)) System.exit(0);
 
-
+		// Determine what keys do depending on window
 		if (state == INTRO) {
 			if (Gdx.input.isKeyJustPressed(ENTER)) state = PAUSE;
 
@@ -181,11 +205,24 @@ public class Window extends ApplicationAdapter {
                 inputBuffer = inputBuffer.substring(0, inputBuffer.length() - 1);
 
             if (Gdx.input.isKeyJustPressed(ENTER)) {
-				System.out.println("Creating new world with seed " + inputBuffer);
-                world = new World(inputBuffer.hashCode());
-
-                state = GAME;
+            	inputBuffer += "#250x100";
+            	state = NEW_GAME_2;
             }
+		} else if (state == NEW_GAME_2) {
+			if (Gdx.input.isKeyJustPressed(ESCAPE)) state = PAUSE;
+
+			addToInputBuffer();
+
+			if (Gdx.input.isKeyJustPressed(BACKSPACE) && inputBuffer.length() > 0 &&
+					inputBuffer.charAt(inputBuffer.length() - 1) != '#')
+				inputBuffer = inputBuffer.substring(0, inputBuffer.length() - 1);
+
+			if (Gdx.input.isKeyJustPressed(ENTER) && valid(inputBuffer)) {
+				System.out.println("Creating new world with config " + inputBuffer);
+				world = new World(inputBuffer);
+
+				state = GAME;
+			}
 		} else if (state == SAVE_GAME) {
             if (Gdx.input.isKeyJustPressed(ESCAPE)) state = PAUSE;
 
@@ -220,12 +257,18 @@ public class Window extends ApplicationAdapter {
             }
         }
 	}
-	
+
+	/**
+	 * Just libGDX things
+	 */
 	@Override
 	public void dispose () {
 		batch.dispose();
 	}
 
+	/**
+	 * Update the frame time array
+	 */
 	private void updatesFrameTimes() {
 		for (int i = 0; i < lastFrameTimes.length - 1; i++) {
 			lastFrameTimes[i] = lastFrameTimes[i + 1];
@@ -234,6 +277,10 @@ public class Window extends ApplicationAdapter {
 		lastFrameTimes[lastFrameTimes.length - 1] = System.currentTimeMillis();
 	}
 
+	/**
+	 * Gets the average FPS over the last couple of frames
+	 * @return the average FPS
+	 */
 	public long averageFPS() {
 		long[] diffs = new long[lastFrameTimes.length - 1];
 
@@ -250,6 +297,10 @@ public class Window extends ApplicationAdapter {
 		return (long) (1000.d * diffs.length / sum);
 	}
 
+	/**
+	 * This WHOPPER of a method adds keypresses to the input buffer
+	 * TODO make nicer maybe?
+	 */
 	private void addToInputBuffer() {
 	    if (Gdx.input.isKeyPressed(SHIFT_LEFT) || Gdx.input.isKeyPressed(SHIFT_RIGHT)) {
             if (Gdx.input.isKeyJustPressed(A)) inputBuffer += 'A';
@@ -319,10 +370,29 @@ public class Window extends ApplicationAdapter {
         if (Gdx.input.isKeyJustPressed(NUM_9)) inputBuffer += '9';
     }
 
+    private boolean valid(String config) {
+		try {
+			String[] res = config.split("#");
+			if (res.length > 2 || res.length <= 1) return false;
+			Integer.parseInt(res[1].split("x")[0]);
+			Integer.parseInt(res[1].split("x")[1]);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	/**
+	 * @return the canvas that things are being drawn on
+	 */
 	public Canvas getCanvas() {
 		return canvas;
 	}
 
+	/**
+	 * @return the current frame #.
+	 * Mostly cosmetic
+	 */
 	public long getFrame() {
 	    return frame;
     }

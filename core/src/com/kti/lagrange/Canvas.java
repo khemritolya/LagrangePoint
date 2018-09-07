@@ -10,18 +10,26 @@ import java.util.List;
 
 
 public class Canvas {
+    // Border constants
     private static final char BORDER_CHAR = '=';
     private static final Color BORDER_COLOR = Color.DARK_GRAY;
     private static final Color BORDER_BACK_COLOR = Color.LIGHT_GRAY;
 
+    // the buffers that will be rendered
     private char[][] charBuffer;
     private Color[][] fontColorBuffer;
     private Color[][] backColorBuffer;
 
+    // Keeping a reference never hurt anybody
     private BitmapFont f;
 
+    // for the settings windows
     public int optionSelected;
 
+    /**
+     * Create the canvas and init buffers
+     * @param f the font to use to draw, should be monospace
+     */
     public Canvas(BitmapFont f) {
         this.f = f;
 
@@ -35,6 +43,10 @@ public class Canvas {
         optionSelected = 0;
     }
 
+    /**
+     * Generate a buffer that represents a world
+     * @param world the world to be displaying
+     */
     public void generateBuffer(World world) {
         clear();
 
@@ -50,7 +62,7 @@ public class Canvas {
         loadString("\'m\' to cycle mapmode", 8, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
         loadString("\'q\' for map legend page", 9, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
 
-
+        // the extra border line that needs to be drawn
         for (int i = 0; i < charBuffer.length; i++) {
             charBuffer[i][charBuffer[0].length - 30] = BORDER_CHAR;
             fontColorBuffer[i][charBuffer[0].length - 30] = BORDER_COLOR;
@@ -67,6 +79,9 @@ public class Canvas {
         generateBorder();
     }
 
+    /**
+     * Create the buffer for the intro screen
+     */
     public void generateIntroBuffer() {
         clear();
 
@@ -90,6 +105,9 @@ public class Canvas {
         generateBorder();
     }
 
+    /**
+     * Create the buffer for the pause screen
+     */
     public void generatePauseBuffer() {
         clear();
 
@@ -147,6 +165,9 @@ public class Canvas {
         generateBorder();
     }
 
+    /**
+     * Create the buffer for the map legent/help screen
+     */
     public void generateHelpBuffer() {
         clear();
 
@@ -175,7 +196,9 @@ public class Canvas {
         generateBorder();
     }
 
-
+    /**
+     * Create the buffer for the new game screen
+     */
     public void generateNewGameBuffer() {
         clear();
 
@@ -191,6 +214,36 @@ public class Canvas {
         }
         generateBorder();
     }
+
+    /**
+     * Create the buffer for the new game screen 2 electric bungaloo
+     */
+    public void generateNewGame2Buffer() {
+        clear();
+
+        String xpls = Window.w.inputBuffer.charAt(Window.w.inputBuffer.length() - 1) == '#' ?
+                "": Window.w.inputBuffer.split("#")[1];
+        //System.out.println(xpls);
+        //System.out.print(Window.w.inputBuffer);
+
+        loadString("Lagrange Point Map Generation Page",2,2, Color.WHITE, Color.BLACK);
+        loadString("Lagrange Point (c) 2018 Khemri Tolya",3,2, Color.WHITE, Color.BLACK);
+
+        loadString("New Game Size (w x h): ", 5, 2, Color.WHITE, Color.BLACK);
+        loadString(xpls, 6, 2, Color.WHITE, Color.BLACK);
+
+        if (Window.w.getFrame() / 25 % 2 == 0) {
+            charBuffer[6][2 + xpls.length()] = '_';
+            fontColorBuffer[6][2 + xpls.length()] = Color.WHITE;
+        }
+
+        generateBorder();
+    }
+
+
+    /**
+     * Create the buffer for the save game screen
+     */
 
     public void generateSaveGameBuffer() {
         clear();
@@ -208,6 +261,10 @@ public class Canvas {
         generateBorder();
     }
 
+    /**
+     * Generate the buffer for the load game screen
+     * @param saves the file names of all files in save/
+     */
     public void generateLoadGameBuffer(List<String> saves) {
         clear();
 
@@ -237,6 +294,9 @@ public class Canvas {
         generateBorder();
     }
 
+    /**
+     * Generates a border
+     */
     private void generateBorder() {
         for (int i = 0; i < charBuffer[0].length; i++) {
             charBuffer[0][i] = BORDER_CHAR;
@@ -265,6 +325,10 @@ public class Canvas {
                         " >").length() / 2, Color.BLACK, Color.LIGHT_GRAY);
     }
 
+    /**
+     * Renders the background color buffer
+     * @param r the ShapeRenderer that will be drawing the background buffer
+     */
     public void renderBackground(ShapeRenderer r) {
         for (int i = 0; i < backColorBuffer.length; i++) {
             for (int j = 0; j < backColorBuffer[0].length; j++) {
@@ -277,6 +341,10 @@ public class Canvas {
         }
     }
 
+    /**
+     * Draw the charBuffer with the colors in fontColorBuffer
+     * @param b the SpriteBatch to use for drawing the characters
+     */
     public void renderText(SpriteBatch b) {
         for (int i = 0; i < charBuffer.length; i++) {
             for (int j = 0; j < charBuffer[0].length; j++) {
@@ -292,6 +360,14 @@ public class Canvas {
         }
     }
 
+    /**
+     * Utility method for loading text into the buffers
+     * @param s the String to be loaded
+     * @param row the row index to begin at
+     * @param start the collumn index to begin at
+     * @param fontColor the font color
+     * @param backColor the background color
+     */
     private void loadString(String s, int row, int start, Color fontColor, Color backColor) {
         if (row >= charBuffer.length) return;
 
@@ -303,6 +379,14 @@ public class Canvas {
         }
     }
 
+    /**
+     * Utility method to load up the text for a biome in the legend/help mapmode
+     * @param b the Biome to display
+     * @param row the row index to begin
+     * @param start the collumn index to begin at
+     * @param fontColor the font color of the text
+     * @param backColor the background color of the text
+     */
     private void loadBiomeAndInfo(Biome b, int row, int start, Color fontColor, Color backColor) {
         charBuffer[row][start] = b.sigchar;
         fontColorBuffer[row][start] = b.sigcolor;
@@ -349,6 +433,9 @@ public class Canvas {
         }
     }
 
+    /**
+     * Clear that buffer before a new frame
+     */
     private void clear() {
         for (int i = 0; i < charBuffer.length; i++) {
             for (int j = 0; j < charBuffer[0].length; j++) {
@@ -359,10 +446,18 @@ public class Canvas {
         }
     }
 
+    /**
+     * Just a humble getter for buffer dimension
+     * @return the buffer Y size
+     */
     public int getBufferY() {
         return charBuffer.length;
     }
 
+    /**
+     * Just a humble getter for buffer dimension
+     * @return the buffer X size
+     */
     public int getBufferX() {
         return charBuffer[0].length;
     }

@@ -8,6 +8,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This file generates new world names using markov chains
+ *
+ * @Author Mr. Sours
+ */
+
 public class NameFactory {
     Random randy;
     HashMap<String, HashMap<Character, Double>> metaChances; // seems fine
@@ -106,8 +112,6 @@ public class NameFactory {
         else
             return "";
     }
-
-
 
     private char getNext(String seed) {
         double threshhold = randy.nextDouble();

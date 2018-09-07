@@ -21,13 +21,18 @@ public class World {
 
     private int mapmode;
 
-    public World(int seed) {
+    public World(String config) {
+        String[] res = config.split("#");
+        int seed = res[0].hashCode();
+        int w = Integer.parseInt(res[1].split("x")[0]);
+        int h = Integer.parseInt(res[1].split("x")[1]);
+
         NameFactory nm = new NameFactory("assets/planet-names.txt", 2, 6, seed);
         name = nm.generateNew();
 
         osn = new OpenSimplexNoise(seed);
 
-        generate(seed);
+        generate(seed, w, h);
 
         x = 1;
         y = 1;
@@ -186,10 +191,7 @@ public class World {
         }
     }*/
 
-    private void generate(int seed) {
-        int w = 250;
-        int h = 100;
-
+    private void generate(int seed, int w, int h) {
         biomes = new Biome[h][w];
         heightmap = new float[h][w];
         float[][] initHeightMap = new float[h][w];

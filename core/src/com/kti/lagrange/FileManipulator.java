@@ -14,6 +14,12 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class FileManipulator {
+    /**
+     * Saves a world to the disk
+     * Screams at you if stuff goes wrong
+     * @param world the world to save
+     * @param filename the filename to save it in
+     */
     public static void save(World world, String filename) {
         try {
             if (!Files.exists(Paths.get("save/"))) {
@@ -34,6 +40,11 @@ public class FileManipulator {
         }
     }
 
+    /**
+     * Gets the current saves files in the save/ directory
+     * Used to check input buffer against in Window.java
+     * @return the names of all files in the save/ directory
+     */
     public static List<String> getSaves() {
         List<String> out = new ArrayList<>();
 
@@ -55,6 +66,13 @@ public class FileManipulator {
         return out;
     }
 
+    /**
+     * Loads up a world from a file name
+     * This should never be called on invalid files
+     * TODO fix wrong files in save/ causing errors
+     * @param filename the filename to load
+     * @return a world loaded from that filename
+     */
     public static World load(String filename) {
         World world = null;
 
