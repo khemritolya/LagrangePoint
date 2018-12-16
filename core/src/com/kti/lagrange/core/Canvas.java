@@ -1,10 +1,13 @@
-package com.kti.lagrange;
+package com.kti.lagrange.core;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.kti.lagrange.core.Window;
+import com.kti.lagrange.map.Biome;
+import com.kti.lagrange.map.World;
 
 import java.util.List;
 

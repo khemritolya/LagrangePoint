@@ -1,6 +1,8 @@
-package com.kti.lagrange;
+package com.kti.lagrange.util;
 
-import java.io.File;
+import com.kti.lagrange.map.Biome;
+import com.kti.lagrange.map.World;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -8,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;

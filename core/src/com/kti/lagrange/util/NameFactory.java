@@ -1,4 +1,4 @@
-package com.kti.lagrange;
+package com.kti.lagrange.util;
 
 import java.util.Random;
 

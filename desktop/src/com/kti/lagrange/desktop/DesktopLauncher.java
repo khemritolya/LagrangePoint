@@ -2,7 +2,7 @@ package com.kti.lagrange.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.kti.lagrange.Window;
+import com.kti.lagrange.core.Window;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class DesktopLauncher extends JFrame implements ActionListener {
 	private static final int width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
@@ -137,7 +136,7 @@ public class DesktopLauncher extends JFrame implements ActionListener {
 
 		    PrintStream p = new PrintStream(new BufferedOutputStream(new FileOutputStream("log.txt")));
 			System.setOut(p);
-			System.setErr(p);
+			//System.setErr(p);
 		} catch (IOException e) {
 			System.setOut(backup);
 			e.printStackTrace();

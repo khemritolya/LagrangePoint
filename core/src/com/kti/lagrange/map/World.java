@@ -1,7 +1,9 @@
-package com.kti.lagrange;
+package com.kti.lagrange.map;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
+import com.kti.lagrange.util.NameFactory;
+import com.kti.lagrange.util.OpenSimplexNoise;
+import com.kti.lagrange.core.Window;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +22,8 @@ public class World {
     private String name;
     private Biome[][] biomes;
     private float[][] heightmap;
+    private int[][] popmap;
+
     List<Civilization> civs;
     private long time;
 
@@ -99,7 +103,7 @@ public class World {
 
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
-                //initHeightMap[i][j] += 0.75*osn.eval(j / x_s, i / y_s);
+                initHeightMap[i][j] += 0.75*osn.eval(j / x_s, i / y_s);
             }
         }
 
@@ -134,6 +138,39 @@ public class World {
                 }
             }
         }
+
+        int ddvis = r.nextInt(10) * 2 + 3;
+        int ddvis_min = (ddvis / 2) * biomes.length / ddvis;
+        int ddvis_max = (ddvis / 2 + 1) * biomes.length / ddvis;
+
+        for (int i = ddvis_min; i < ddvis_max; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (biomes[i][j] == Biome.PLAINS) {
+                    biomes[i][j] = Biome.DESERT;
+                }
+            }
+        }
+
+        for (int i = 0; i < biomes[0].length; i++) {
+            if (osn.eval(ddvis_min, i / 3.0f) > 0 &&
+                    biomes[ddvis_min][i] == Biome.DESERT) {
+                biomes[ddvis_min][i] = Biome.PLAINS;
+            }
+
+            if (osn.eval(ddvis_max, i / 3.0f) > 0 &&
+                    biomes[ddvis_max - 1][i] == Biome.DESERT) {
+                biomes[ddvis_max - 1][i] = Biome.PLAINS;
+            }
+        }
+
+        for (int i = 0; i < biomes.length / 11; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                if (biomes[i][j] == Biome.PLAINS) {
+                    biomes[i][j] = Biome.NORTH_TUNDRA;
+                }
+            }
+        }
+
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
                 if (biomes[i][j] == Biome.SEA) {
@@ -219,6 +256,8 @@ public class World {
                 }
             }
         }
+
+        popmap = new int[h][w];
     }
 
     private void raise(float[][] initHeightMap, Random r    ) {
@@ -227,7 +266,7 @@ public class World {
 
         int y = r.nextInt(h-1) + 1;
         int x = r.nextInt(w-1) + 1;
-        int rad = 20;
+        int rad = (w + h) / 20;
         int sl = r.nextInt(180);
 
         float[] vertx = new float[4];
@@ -285,28 +324,6 @@ public class World {
         return (float)Math.sqrt(v);
     }
 
-    private void step(float[][] initHeightMap, int a, int b, int c, int d) {
-        if (a+1 >= c && b+1 >= d) return;
-
-        int centerX = (a+c) / 2;
-        int centerY = (b+d) / 2;
-
-        int n = c-a;
-
-        initHeightMap[a][centerY] = (initHeightMap[a][b] + initHeightMap[a][d]) / 2 + n*eval(a, centerY);
-        initHeightMap[c][centerY] = (initHeightMap[c][b] + initHeightMap[c][d]) / 2 + n*eval(c, centerY);
-        initHeightMap[centerX][b] = (initHeightMap[a][b] + initHeightMap[c][b]) / 2 + n*eval(centerX, b);
-        initHeightMap[centerX][d] = (initHeightMap[a][d] + initHeightMap[c][d]) / 2 + n*eval(centerX, d);
-
-        initHeightMap[centerX][centerY] = (initHeightMap[a][centerY] + initHeightMap[c][centerY] +
-                initHeightMap[centerX][b] + initHeightMap[centerX][d]) / 4 + n*eval(centerX, centerY);
-
-        step(initHeightMap, a, b, centerX, centerY);
-        step(initHeightMap, a, centerY, centerX, d);
-        step(initHeightMap, centerX, b, c, centerY);
-        step(initHeightMap, centerX, centerY, c, d);
-    }
-
     private boolean isOcean(int i, int j) {
         boolean res = isOceanH(i, j);
 
@@ -346,50 +363,6 @@ public class World {
         fillLakes(i, j+1);
     }
 
-    private void createRiver(int i, int j) {
-        if (i < 1 || j < 1 || i >= biomes.length-1 || j >= biomes[0].length-1) return;
-        if (biomes[i][j] == Biome.SEA || biomes[i][j] == Biome.OASIS || biomes[i][j] == Biome.LAKE ||
-                biomes[i][j] == Biome.ICE || biomes[i][j] == Biome.RIVER_EAST_WEST ||
-                biomes[i][j] == Biome.RIVER_NORTH_SOUTH) return;
-
-        double[] vals = new double[4];
-        vals[0] = heightmap[i-1][j];
-        vals[1] = heightmap[i+1][j];
-        vals[2] = heightmap[i][j-1];
-        vals[3] = heightmap[i][j+1];
-
-        Arrays.sort(vals);
-
-        if (vals[0] > heightmap[i][j]) {
-            biomes[i][j] = Biome.LAKE;
-            return;
-        }
-
-        if (heightmap[i-1][j] == vals[0]) {
-            biomes[i][j] = Biome.RIVER_NORTH_SOUTH;
-            createRiver(i-1, j);
-            return;
-        }
-
-        if (heightmap[i+1][j] == vals[0]) {
-            biomes[i][j] = Biome.RIVER_NORTH_SOUTH;
-            createRiver(i+1, j);
-            return;
-        }
-
-        if (heightmap[i][j-1] == vals[0]) {
-            biomes[i][j] = Biome.RIVER_EAST_WEST;
-            createRiver(i, j-1);
-            return;
-        }
-
-        if (heightmap[i][j+1] == vals[0]) {
-            biomes[i][j] = Biome.RIVER_EAST_WEST;
-            createRiver(i, j+1);
-            return;
-        }
-    }
-
     public void loadWorld(char[][] charBuffer, Color[][] fontColorBuffer, Color[][] backColorBuffer) {
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
@@ -397,9 +370,7 @@ public class World {
             }
         }
 
-        for (Civilization c:civs) {
-            c.render(backColorBuffer, y, x);
-        }
+
     }
 
     private void put(char[][] charBuffer, Color[][] fontColorBuffer, int i, int j) {
@@ -412,31 +383,15 @@ public class World {
             if (mapmode == 0) {
                 charBuffer[i+y][j+x] = biomes[i][j].sigchar;
                 fontColorBuffer[i+y][j+x] = biomes[i][j].sigcolor;
-            } else {
+            } else if (mapmode == 1) {
                 charBuffer[i+y][j+x] = 'X';
                 fontColorBuffer[i+y][j+x] = new Color(heightmap[i][j], 0,0,1);
+            } else {
+                charBuffer[i+y][j+x] = 'X';
+                fontColorBuffer[i+y][j+x] = new Color(popmap[i][j]/1000f, 0,0,1);
             }
         }
     }
-
-    /*
-
-    public void loadMiniMap(char[][] charBuffer, Color[][] fontColorBuffer) {
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 28; j++) {
-                put2(charBuffer, fontColorBuffer, i, j);
-            }
-        }
-    }
-
-    private void put2(char[][] charBuffer, Color[][] fontColorBuffer, int i, int j) {
-        charBuffer[charBuffer.length - 16 + i][charBuffer[0].length - 29 + j] =
-                biomes[i * biomes.length / 15][j * biomes[0].length / 28].sigchar;
-        fontColorBuffer[charBuffer.length - 16 + i][charBuffer[0].length - 29 + j] =
-                biomes[i * biomes.length / 15][j * biomes[0].length / 28].sigcolor;
-    }
-
-    */
 
     public void update(float dt) {
         time += dt * 1000;

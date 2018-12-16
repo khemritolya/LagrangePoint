@@ -1,4 +1,4 @@
-package com.kti.lagrange;
+package com.kti.lagrange.core;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.kti.lagrange.util.FileManipulator;
+import com.kti.lagrange.map.World;
 
 import java.io.IOException;
 import java.util.List;
@@ -191,6 +193,8 @@ public class Window extends ApplicationAdapter {
 			if (Gdx.input.isKeyJustPressed(M)) {
 				if (world.getMapmode() == 0) {
 					world.setMapmode(1);
+				} else if (world.getMapmode() == 1) {
+					world.setMapmode(2);
 				} else {
 					world.setMapmode(0);
 				}
