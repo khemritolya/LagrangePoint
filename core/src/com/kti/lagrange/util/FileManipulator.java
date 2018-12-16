@@ -86,10 +86,12 @@ public class FileManipulator {
             int h = Integer.parseInt(l.get(1).split("x")[0]);
             int w = Integer.parseInt(l.get(1).split("x")[1]);
 
+            long time = Long.parseLong(l.get(2));
+
             Biome[][] biomes = new Biome[h][w];
             float[][] heightmap = new float[h][w];
 
-            int iter = 2;
+            int iter = 3;
 
             for (int i = 0; i < h; i++) {
                 for (int j = 0; j < w; j++) {
@@ -99,9 +101,10 @@ public class FileManipulator {
                 }
             }
 
-            world = new World(name, biomes, heightmap);
+            world = new World(name, biomes, heightmap, time);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
 
         return world;

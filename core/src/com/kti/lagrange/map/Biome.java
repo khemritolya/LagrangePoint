@@ -7,9 +7,9 @@ public enum Biome {
     MOUNTAIN("Mountain", '^', Color.GRAY), HIGH_MOUNTAIN("Peak", '^', Color.LIGHT_GRAY),
     ICE("Ice Shelf", '+', Color.WHITE), LAKE("Lake", '~', Color.CYAN), DESERT("Desert", '-', Color.GOLDENROD),
     FOREST("Forest", '#', CC.ALMOST_DARK_GREEN), VOLCANO("Volcano", '^', Color.RED),
-    FIELD("Fertile Land", 'm', Color.GOLDENROD), NORTH_TUNDRA("Tundra", '-', Color.LIGHT_GRAY),
+    FIELD("Farmland", 'm', Color.GOLDENROD), NORTH_TUNDRA("Tundra", '-', Color.LIGHT_GRAY),
     RIVER_EAST_WEST("River", '-', Color.CYAN), RIVER_NORTH_SOUTH("River", '|', Color.CYAN),
-    TMP("ERROR", '$', Color.RED);
+    CITY("City", 'W', Color.GRAY), TMP("ERROR", '$', Color.RED);
 
     private static class CC {
         private static final Color DARK_GREEN = new Color(0, 0.5f, 0, 1);
@@ -28,7 +28,7 @@ public enum Biome {
 
     public static int getIDByBiome(Biome b) {
         for (int i = 0; i < Biome.values().length; i++) {
-            if(Biome.values()[i] == b) return i;
+            if (Biome.values()[i] == b) return i;
         }
 
         return -1;

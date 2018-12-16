@@ -47,10 +47,10 @@ public class Canvas {
      * Generate a buffer that represents a world
      * @param world the world to be displaying
      */
-    public void generateBuffer(World world) {
+    public void generateWorldBuffer(World world) {
         clear();
 
-        world.loadWorld(charBuffer, fontColorBuffer);
+        world.loadWorld(charBuffer, fontColorBuffer, backColorBuffer);
         //world.loadMiniMap(charBuffer, fontColorBuffer);
 
         loadString("World Name: ", 2, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);

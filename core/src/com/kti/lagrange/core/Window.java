@@ -71,7 +71,7 @@ public class Window extends ApplicationAdapter {
 		// This is slow! See TODO
 		try {
 			sound = Gdx.audio.newSound(Gdx.files.internal("assets/audio.mp3"));
-			soundID = sound.play(0.5f);
+			soundID = sound.play(0.0f);
 			if (soundID == -1) throw new IOException("Could not init music properly");
 			sound.setLooping(soundID, true);
 		} catch (Exception e) {
@@ -113,7 +113,10 @@ public class Window extends ApplicationAdapter {
 		} else if (state == PAUSE) {
             canvas.generatePauseBuffer();
         } else if (state == GAME) {
-			canvas.generateBuffer(world);
+			// Figure out how the world should change
+			world.update(Gdx.graphics.getDeltaTime());
+
+			canvas.generateWorldBuffer(world);
 		} else if (state == MAP_HELP) {
 		    canvas.generateHelpBuffer();
         } else if (state == NEW_GAME) {
@@ -252,7 +255,10 @@ public class Window extends ApplicationAdapter {
 					System.out.println("Loading a world with name " + inputBuffer);
 					world = FileManipulator.load(inputBuffer);
 
-                    state = GAME;
+					if (world != null)
+                    	state = GAME;
+					else
+						state = PAUSE;
                 }
             }
         }

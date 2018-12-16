@@ -1,6 +1,7 @@
 package com.kti.lagrange;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,12 +13,15 @@ public class World {
     private static final float y_s = 10f;
     private static OpenSimplexNoise osn;
 
-    private String name;
     private int x, y;
     private int mbX, mbY;
     private int selX, selY;
+
+    private String name;
     private Biome[][] biomes;
     private float[][] heightmap;
+    List<Civilization> civs;
+    private long time;
 
     private int mapmode;
 
@@ -32,7 +36,11 @@ public class World {
 
         osn = new OpenSimplexNoise(seed);
 
+        civs = new ArrayList<>();
+
         generate(seed, w, h);
+
+        time = 0;
 
         x = 1;
         y = 1;
@@ -52,12 +60,14 @@ public class World {
         mapmode = 0;
     }
 
-    public World(String name, Biome[][] biomes, float[][] heightmap) {
+    public World(String name, Biome[][] biomes, float[][] heightmap, long time) {
         this.name  = name;
 
         this.biomes = biomes;
         this.heightmap = heightmap;
 
+        this.time = time;
+
         x = 1;
         y = 1;
 
@@ -75,121 +85,6 @@ public class World {
 
         mapmode = 0;
     }
-
-    /*
-    So that posterity may see my humble beggingins!
-
-    private void generate() {
-        biomes = new Biome[100][200];
-        heightmap = new float[100][200];
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                if (eval(j / x_s, i / y_s) > SHORE_HEIGHT) {
-                    if (eval(j / x_s, i / y_s) > MNTN_HEIGHT) {
-                        if (eval((j-1) / x_s, i / y_s) > MNTN_HEIGHT &&
-                                eval((j+1) / x_s, i / y_s) > MNTN_HEIGHT &&
-                                eval(j / x_s, (i-1) / y_s) > MNTN_HEIGHT &&
-                                eval(j / x_s, (i+1) / y_s) > MNTN_HEIGHT) {
-                            biomes[i][j] = Biome.HIGH_MOUNTAIN;
-                        } else {
-                            biomes[i][j] = Biome.MOUNTAIN;
-                        }
-                    } else {
-                        biomes[i][j] = Biome.PLAINS;
-                    }
-                } else {
-                    biomes[i][j] = Biome.SEA;
-                }
-            }
-        }
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                heightmap[i][j] = (float) eval(j / x_s, i / y_s)+1;
-            }
-        }
-
-        float m = max(heightmap);
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                heightmap[i][j] = heightmap[i][j] / m;
-            }
-        }
-
-        for (int i = 0; i < biomes.length; i++) {
-            isOcean(i, 0);
-            isOcean(i, biomes[0].length - 1);
-        }
-
-        for (int i = 0; i < biomes[0].length; i++) {
-            for (int j = 0; j < (eval(i / 3.0f, 0)+1) * 2 + 1; j++) {
-                biomes[j][i] = Biome.ICE;
-            }
-
-            for (int j = 0; j < (eval(i / 3.0f, biomes.length - 1) + 1) * 2 + 1; j++) {
-                biomes[biomes.length - j - 1][i] = Biome.ICE;
-            }
-        }
-
-        for (int i = 2 * biomes.length / 5; i < 3 * biomes.length / 5; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.PLAINS) {
-                    biomes[i][j] = Biome.DESERT;
-                }
-            }
-        }
-
-        for (int i = 0; i < biomes[0].length; i++) {
-            if (osn.eval(2 * biomes.length / 5, i) > 0 && biomes[2 * biomes.length / 5][i] == Biome.DESERT) {
-                biomes[2 * biomes.length / 5][i] = Biome.PLAINS;
-            }
-
-            if (osn.eval(3 * biomes.length / 5, i) > 0 && biomes[3 * biomes.length / 5 - 1][i] == Biome.DESERT) {
-                biomes[3 * biomes.length / 5 - 1][i] = Biome.PLAINS;
-            }
-        }
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.PLAINS && osn.eval(i, j) > 0.6) {
-                    biomes[i][j] = Biome.LAKE;
-                }
-
-                if (biomes[i][j] == Biome.PLAINS && osn.eval(i, j) < -0.25) {
-                    biomes[i][j] = Biome.FOREST;
-                }
-
-                if (biomes[i][j] == Biome.DESERT && osn.eval(i, j) > 0.75) {
-                    biomes[i][j] = Biome.OASIS;
-                }
-
-                if (biomes[i][j] == Biome.HIGH_MOUNTAIN && osn.eval(i, j) > 0.5) {
-                    biomes[i][j] = Biome.VOLCANO;
-                }
-            }
-        }
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.LAKE || biomes[i][j] == Biome.OASIS) {
-                    if (biomes[i-1][j] == Biome.SEA || biomes[i+1][j] == Biome.SEA ||
-                            biomes[i][j-1] == Biome.SEA || biomes[i][j+1] == Biome.SEA)
-                        biomes[i][j] = Biome.SEA;
-                }
-            }
-        }
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.LAKE) {
-                    lake(i, j);
-                    biomes[i][j] = Biome.LAKE;
-                }
-            }
-        }
-    }*/
 
     private void generate(int seed, int w, int h) {
         biomes = new Biome[h][w];
@@ -198,54 +93,13 @@ public class World {
 
         Random r = new Random(seed);
 
-        int divisions = 5;
-
-        for (int i = 0; i < divisions; i++) {
-            for (int j = 0; j < divisions; j++) {
-                int top = i * (initHeightMap.length - 1) / divisions;
-                int bottom = (i+1) * (initHeightMap.length - 1) / divisions;
-                int left = j * (initHeightMap[0].length - 1) / divisions;
-                int right = (j+1) * (initHeightMap[0].length - 1) / divisions;
-
-                int centerX = (left + right) / 2;
-                int centerY = (top + bottom) / 2;
-
-                initHeightMap[centerY][centerX] = 20 * r.nextInt(2);
-
-                if (i > 0 && j > 0 && i < divisions - 1 && j < divisions - 1) {
-                    initHeightMap[top][left] = 20 * r.nextInt(2);
-                    initHeightMap[bottom][left] = 20 * r.nextInt(2);
-                    initHeightMap[top][right] = 20 * r.nextInt(2);
-                    initHeightMap[bottom][right] = 20 * r.nextInt(2);
-
-                    initHeightMap[top][centerX] = 20 * r.nextInt(2);
-                    initHeightMap[bottom][centerX] = 20 * r.nextInt(2);
-                    initHeightMap[centerY][left] = 20 * r.nextInt(2);
-                    initHeightMap[centerY][right] = 20 * r.nextInt(2);
-                }
-            }
-        }
-
-        for (int i = 0; i < divisions; i++) {
-            for (int j = 0; j < divisions; j++) {
-                int top = i * (initHeightMap.length - 1) / divisions;
-                int bottom = (i+1) * (initHeightMap.length - 1) / divisions;
-                int left = j * (initHeightMap[0].length - 1) / divisions;
-                int right = (j+1) * (initHeightMap[0].length - 1) / divisions;
-
-                int centerX = (left + right) / 2;
-                int centerY = (top + bottom) / 2;
-
-                step(initHeightMap, top, left, centerY, centerX);
-                step(initHeightMap, centerY, left, bottom, centerX);
-                step(initHeightMap, top, centerX, centerY, right);
-                step(initHeightMap, centerY, centerX, bottom, right);
-            }
+        for (int i = 0; i < 1000; i++) {
+            raise(initHeightMap, r);
         }
 
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
-                initHeightMap[i][j] += 7*osn.eval(j / x_s, i / y_s);
+                //initHeightMap[i][j] += 0.75*osn.eval(j / x_s, i / y_s);
             }
         }
 
@@ -265,6 +119,8 @@ public class World {
             }
         }
 
+        biomes = new Biome[h][w];
+
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
                 if (heightmap[i][j] > 0.45) {
@@ -278,7 +134,6 @@ public class World {
                 }
             }
         }
-
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
                 if (biomes[i][j] == Biome.SEA) {
@@ -288,7 +143,7 @@ public class World {
         }
 
         for (int i = 0; i < biomes[0].length; i++) {
-            for (int j = 0; j < (eval(i / 4.0f, 0)+1) * 3 + 2; j++) {
+            for (int j = 0; j < (eval(i / 4.0f, 0) + 1) * 3 + 2; j++) {
                 biomes[j][i] = Biome.ICE;
             }
 
@@ -297,49 +152,15 @@ public class World {
             }
         }
 
-        for (int i = 1; i < biomes.length-1; i++) {
-            for (int j = 1; j < biomes[0].length-1; j++) {
+        for (int i = 1; i < biomes.length - 1; i++) {
+            for (int j = 1; j < biomes[0].length - 1; j++) {
                 if (biomes[i][j] == Biome.MOUNTAIN &&
-                        (biomes[i-1][j] == Biome.MOUNTAIN || biomes[i-1][j] == Biome.HIGH_MOUNTAIN) &&
-                        (biomes[i+1][j] == Biome.MOUNTAIN || biomes[i+1][j] == Biome.HIGH_MOUNTAIN) &&
-                        (biomes[i][j-1] == Biome.MOUNTAIN || biomes[i][j-1] == Biome.HIGH_MOUNTAIN) &&
-                        (biomes[i][j+1] == Biome.MOUNTAIN || biomes[i][j+1] == Biome.HIGH_MOUNTAIN)) {
+                        (biomes[i - 1][j] == Biome.MOUNTAIN || biomes[i - 1][j] == Biome.HIGH_MOUNTAIN) &&
+                        (biomes[i + 1][j] == Biome.MOUNTAIN || biomes[i + 1][j] == Biome.HIGH_MOUNTAIN) &&
+                        (biomes[i][j - 1] == Biome.MOUNTAIN || biomes[i][j - 1] == Biome.HIGH_MOUNTAIN) &&
+                        (biomes[i][j + 1] == Biome.MOUNTAIN || biomes[i][j + 1] == Biome.HIGH_MOUNTAIN)) {
                     biomes[i][j] = Biome.HIGH_MOUNTAIN;
                 }
-            }
-        }
-
-        /*for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                if ((biomes[i][j] == Biome.MOUNTAIN || biomes[i][j] == Biome.HIGH_MOUNTAIN) &&
-                        osn.eval(i, j) > 0.6) {
-                    createRiver(i, j);
-                    biomes[i][j] = Biome.MOUNTAIN;
-                }
-            }
-        }*/
-
-        int ddvis = r.nextInt(10) * 2 + 3;
-        int ddvis_min = (ddvis / 2) * biomes.length / ddvis;
-        int ddvis_max = (ddvis / 2 + 1) * biomes.length / ddvis;
-
-        for (int i = ddvis_min; i < ddvis_max; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] == Biome.PLAINS) {
-                    biomes[i][j] = Biome.DESERT;
-                }
-            }
-        }
-
-        for (int i = 0; i < biomes[0].length; i++) {
-            if (osn.eval(ddvis_min, i / 3.0f) > 0 &&
-                    biomes[ddvis_min][i] == Biome.DESERT) {
-                biomes[ddvis_min][i] = Biome.PLAINS;
-            }
-
-            if (osn.eval(ddvis_max, i / 3.0f) > 0 &&
-                    biomes[ddvis_max - 1][i] == Biome.DESERT) {
-                biomes[ddvis_max - 1][i] = Biome.PLAINS;
             }
         }
 
@@ -360,12 +181,12 @@ public class World {
         }
 
         for (int i = 0; i < biomes[0].length; i++) {
-            if (osn.eval(0, 5+i / 3.0f) > 0 &&
+            if (osn.eval(0, 5 + i / 3.0f) > 0 &&
                     biomes[biomes.length / 11 - 1][i] == Biome.NORTH_TUNDRA) {
                 biomes[biomes.length / 11 - 1][i] = Biome.PLAINS;
             }
 
-            if (osn.eval(biomes.length, 5+i / 3.0f) > 0 &&
+            if (osn.eval(biomes.length, 5 + i / 3.0f) > 0 &&
                     biomes[10 * biomes.length / 11][i] == Biome.NORTH_TUNDRA) {
                 biomes[10 * biomes.length / 11][i] = Biome.PLAINS;
             }
@@ -382,14 +203,14 @@ public class World {
                 }
 
                 if (biomes[i][j] == Biome.DESERT && osn.eval(i, j) > 0.75 &&
-                        biomes[i-1][j] != Biome.SEA && biomes[i+1][j] != Biome.SEA &&
-                        biomes[i][j-1] != Biome.SEA && biomes[i][j+1] != Biome.SEA) {
+                        biomes[i - 1][j] != Biome.SEA && biomes[i + 1][j] != Biome.SEA &&
+                        biomes[i][j - 1] != Biome.SEA && biomes[i][j + 1] != Biome.SEA) {
                     biomes[i][j] = Biome.OASIS;
                 }
 
                 if (biomes[i][j] == Biome.PLAINS && osn.eval(i, j) > 0.75 &&
-                        biomes[i-1][j] != Biome.SEA && biomes[i+1][j] != Biome.SEA &&
-                        biomes[i][j-1] != Biome.SEA && biomes[i][j+1] != Biome.SEA) {
+                        biomes[i - 1][j] != Biome.SEA && biomes[i + 1][j] != Biome.SEA &&
+                        biomes[i][j - 1] != Biome.SEA && biomes[i][j + 1] != Biome.SEA) {
                     biomes[i][j] = Biome.LAKE;
                 }
 
@@ -400,19 +221,85 @@ public class World {
         }
     }
 
+    private void raise(float[][] initHeightMap, Random r    ) {
+        int w = initHeightMap[0].length;
+        int h = initHeightMap.length;
+
+        int y = r.nextInt(h-1) + 1;
+        int x = r.nextInt(w-1) + 1;
+        int rad = 20;
+        int sl = r.nextInt(180);
+
+        float[] vertx = new float[4];
+        float[] verty = new float[4];
+
+        vertx[0] = x;
+        vertx[1] = x + rad * cos(sl);
+        vertx[2] = x + rad * sqrt(2) * cos(sl + 45);
+        vertx[3] = x - rad * cos(90 - sl);
+
+        verty[0] = y;
+        verty[1] = y + rad * sin(sl);
+        verty[2] = y + rad * sqrt(2) * sin(sl + 45);
+        verty[3] = y + rad * sin(90 - sl);
+
+        for (int i = 0; i < initHeightMap.length; i++) {
+            for (int j = 0; j < initHeightMap[0].length; j++) {
+                               if (in(j, i, vertx, verty) || in(j - w, i, vertx, verty) || in(j + w, i, vertx, verty)
+                        || in(j, i+h, vertx, verty) || in(j, i-h, vertx, verty)
+                        || in(j-w, i-h, vertx, verty) || in(j-w, i+h, vertx, verty)
+                        || in(j+w, i-h, vertx, verty) || in(j+w, i+h, vertx, verty)) {
+                    initHeightMap[i][j]++;
+                }
+
+            }
+        }
+
+
+    }
+
+    private static boolean in(float x, float y, float[] polyX, float[] polyY) {
+        int i, j = 4-1;
+        boolean  oddNodes = false;
+
+        for (i=0; i<4; i++) {
+            if ((polyY[i]< y && polyY[j]>=y  || polyY[j]< y && polyY[i]>=y)
+                    &&  (polyX[i]<=x || polyX[j]<=x)) {
+                oddNodes ^= (polyX[i]+(y-polyY[i])/(polyY[j]-polyY[i])*(polyX[j]-polyX[i])<x);
+            }
+            j=i;
+        }
+
+        return oddNodes;
+    }
+
+    private static float sin(float theta) {
+        return (float)Math.sin(theta/180*Math.PI);
+    }
+
+    private static float cos(float theta) {
+        return (float)Math.cos(theta/180*Math.PI);
+    }
+
+    private static float sqrt(float v) {
+        return (float)Math.sqrt(v);
+    }
+
     private void step(float[][] initHeightMap, int a, int b, int c, int d) {
         if (a+1 >= c && b+1 >= d) return;
 
         int centerX = (a+c) / 2;
         int centerY = (b+d) / 2;
 
-        initHeightMap[a][centerY] = (initHeightMap[a][b] + initHeightMap[a][d]) / 2 + eval(a, centerY);
-        initHeightMap[c][centerY] = (initHeightMap[c][b] + initHeightMap[c][d]) / 2 + eval(c, centerY);
-        initHeightMap[centerX][b] = (initHeightMap[a][b] + initHeightMap[c][b]) / 2 + eval(centerX, b);
-        initHeightMap[centerX][d] = (initHeightMap[a][d] + initHeightMap[c][d]) / 2 + eval(centerX, d);
+        int n = c-a;
+
+        initHeightMap[a][centerY] = (initHeightMap[a][b] + initHeightMap[a][d]) / 2 + n*eval(a, centerY);
+        initHeightMap[c][centerY] = (initHeightMap[c][b] + initHeightMap[c][d]) / 2 + n*eval(c, centerY);
+        initHeightMap[centerX][b] = (initHeightMap[a][b] + initHeightMap[c][b]) / 2 + n*eval(centerX, b);
+        initHeightMap[centerX][d] = (initHeightMap[a][d] + initHeightMap[c][d]) / 2 + n*eval(centerX, d);
 
         initHeightMap[centerX][centerY] = (initHeightMap[a][centerY] + initHeightMap[c][centerY] +
-                initHeightMap[centerX][b] + initHeightMap[centerX][d]) / 4 + eval(centerX, centerY);
+                initHeightMap[centerX][b] + initHeightMap[centerX][d]) / 4 + n*eval(centerX, centerY);
 
         step(initHeightMap, a, b, centerX, centerY);
         step(initHeightMap, a, centerY, centerX, d);
@@ -503,11 +390,15 @@ public class World {
         }
     }
 
-    public void loadWorld(char[][] charBuffer, Color[][] fontColorBuffer) {
+    public void loadWorld(char[][] charBuffer, Color[][] fontColorBuffer, Color[][] backColorBuffer) {
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
                 put(charBuffer, fontColorBuffer, i, j);
             }
+        }
+
+        for (Civilization c:civs) {
+            c.render(backColorBuffer, y, x);
         }
     }
 
@@ -546,6 +437,12 @@ public class World {
     }
 
     */
+
+    public void update(float dt) {
+        time += dt * 1000;
+
+
+    }
 
     public void dx(int dx) {
         if (mbX >= 2) {
@@ -620,6 +517,7 @@ public class World {
 
         out.add(name);
         out.add(biomes.length + "x" + biomes[0].length);
+        out.add(time + "");
 
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
