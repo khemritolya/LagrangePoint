@@ -2,6 +2,7 @@ package com.kti.lagrange.core;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -30,8 +31,7 @@ public class Window extends ApplicationAdapter {
 	private long[] lastFrameTimes;
 	private long frame;
 
-	private Sound sound;
-	private long soundID;
+	private Music sound;
 
 	private static final int INTRO = 0;
 	private static final int PAUSE = 1;
@@ -62,7 +62,7 @@ public class Window extends ApplicationAdapter {
 		WIN_HEIGHT = Gdx.graphics.getHeight();
 
 		// Load up the font
-		FreeTypeFontGenerator f = new FreeTypeFontGenerator(Gdx.files.absolute("assets/font.ttf"));
+		FreeTypeFontGenerator f = new FreeTypeFontGenerator(Gdx.files.absolute("assets/mir_font.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter ftfp = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		ftfp.size = 12;
 		font = f.generateFont(ftfp);
@@ -72,10 +72,10 @@ public class Window extends ApplicationAdapter {
 		// Load up audio
 		// This is slow! See TODO
 		try {
-			sound = Gdx.audio.newSound(Gdx.files.internal("assets/audio.mp3"));
-			soundID = sound.play(0.0f);
-			if (soundID == -1) throw new IOException("Could not init music properly");
-			sound.setLooping(soundID, true);
+			sound = Gdx.audio.newMusic(Gdx.files.internal("assets/audio.mp3"));
+			sound.setLooping(true);
+			sound.setVolume(0.0f); // TODO change
+			sound.play();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -106,7 +106,7 @@ public class Window extends ApplicationAdapter {
 	    updatesFrameTimes();
 
 	    // Just OpenGL things
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 0.5f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Determine type of thing we should draw
@@ -189,6 +189,9 @@ public class Window extends ApplicationAdapter {
 
 			if (Gdx.input.isKeyPressed(RIGHT)) world.dx(-1);
 
+			if (Gdx.input.isKeyJustPressed(A)) world.abduct();
+
+			if (Gdx.input.isKeyPressed(B)) world.abduct();
 
 			if (Gdx.input.isKeyJustPressed(M)) {
 				if (world.getMapmode() == 0) {
@@ -199,6 +202,8 @@ public class Window extends ApplicationAdapter {
 					world.setMapmode(0);
 				}
 			}
+
+			if (Gdx.input.isKeyJustPressed(E)) world.flipCivSeen();
 		} else if (state == MAP_HELP) {
 		    if (Gdx.input.isKeyJustPressed(ESCAPE)) {
 		        state = GAME;

@@ -5,9 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.kti.lagrange.core.Window;
 import com.kti.lagrange.map.Biome;
 import com.kti.lagrange.map.World;
+import com.kti.lagrange.util.CC;
 
 import java.util.List;
 
@@ -58,12 +58,23 @@ public class Canvas {
 
         loadString("World Name: ", 2, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
         loadString(world.getName(), 3, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString("Time since arrival: ", 4, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString(world.getTime() / 1000d + " days", 5, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString("World Population: ", 6, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString(world.getPopulation()/1000/1000d + "M people", 7, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
 
-        loadString("Biome Info: ", 5, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
-        loadString(world.getSelectedInfo(), 6, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString("Biome Info: ", 9, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString(world.getBiomeInfo(), 10, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString(world.getPopInfo(), 11, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
 
-        loadString("\'m\' to cycle mapmode", 8, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
-        loadString("\'q\' for map legend page", 9, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString("Empires: " + world.getCivCount(), 13, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        if (world.getCivInfo() != null) {
+            loadString("Empire Manpower:" + world.getCivInfo().getManpower(), 14, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        }
+
+        loadString("\'m\' to cycle mapmode", 18, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString("\'e\' to toggle civs", 19, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
+        loadString("\'q\' for map legend page", 20, charBuffer[0].length - 28, Color.WHITE, Color.BLACK);
 
         // the extra border line that needs to be drawn
         for (int i = 0; i < charBuffer.length; i++) {

@@ -91,6 +91,7 @@ public class FileManipulator {
 
             Biome[][] biomes = new Biome[h][w];
             float[][] heightmap = new float[h][w];
+            float[][] popmap = new float[h][w];
 
             int iter = 3;
 
@@ -98,11 +99,12 @@ public class FileManipulator {
                 for (int j = 0; j < w; j++) {
                     biomes[i][j] = Biome.getBiomeByID(Integer.parseInt(l.get(iter).split(":")[0]));
                     heightmap[i][j] = Float.parseFloat(l.get(iter).split(":")[1]);
+                    popmap[i][j] = Float.parseFloat(l.get(iter).split(":")[2]);
                     iter++;
                 }
             }
 
-            world = new World(name, biomes, heightmap, time);
+            world = new World(name, biomes, heightmap, popmap, time);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
