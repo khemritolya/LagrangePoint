@@ -3,16 +3,15 @@ package com.kti.lagrange.core;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.kti.lagrange.map.WorldConstant;
 import com.kti.lagrange.util.FileManipulator;
 import com.kti.lagrange.map.World;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.badlogic.gdx.Input.Keys.*;
@@ -89,6 +88,8 @@ public class Window extends ApplicationAdapter {
 		state = 0;
         frame = 0;
 		inputBuffer = new String();
+
+		WorldConstant.init();
 
 		// 3...2...1 we are live
 		System.out.println("Done Lagrange Point init!");

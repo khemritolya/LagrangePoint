@@ -19,7 +19,7 @@ public class DesktopLauncher extends JFrame implements ActionListener {
 	private static final int width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	private static final int height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	private static final String[] resolutions = {"1920x1080", "1280x720", "1024x720", "800x640", "custom"};
-	private static final String version = "0.02 - \"Elipson\"";
+	private static final String version = "0.03 - \"Kairo\"";
 
 	private JComboBox resolutionSelector;
 	private JCheckBox fullscreenBox;
@@ -135,7 +135,7 @@ public class DesktopLauncher extends JFrame implements ActionListener {
 		    if (Files.exists(Paths.get("log.txt"))) Files.delete(Paths.get("log.txt"));
 
 		    PrintStream p = new PrintStream(new BufferedOutputStream(new FileOutputStream("log.txt")));
-			System.setOut(p);
+			//System.setOut(p);
 			//System.setErr(p);
 		} catch (IOException e) {
 			System.setOut(backup);

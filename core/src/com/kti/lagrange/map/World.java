@@ -273,8 +273,7 @@ public class World {
 
         for (int i = 0; i < biomes.length; i++) {
             for (int j = 0; j < biomes[0].length; j++) {
-                if (biomes[i][j] != Biome.SEA && biomes[i][j] != Biome.LAKE && biomes[i][j] != Biome.OASIS &&
-                        biomes[i][j] != Biome.ICE) {
+                if (biomes[i][j] != Biome.SEA && biomes[i][j] != Biome.ICE) {
                     civs.add(new Civilization(j, i, r.nextInt(), biomes, civmap));
                 }
             }
@@ -283,6 +282,100 @@ public class World {
         for (int i = 0; i < 100; i++) {
             Civilization.spread(civs, biomes, civmap, popmap);
         }
+    }
+
+    public void update(float dt) {
+        time += dt * 1000;
+
+        if (Window.w.getFrame() % 10 == 0) Civilization.spread(civs, biomes, civmap, popmap);
+
+        if (time % 10 == 0) {
+            for (int i = 0; i < biomes.length; i++) {
+                for (int j = 0; j < biomes[0].length; j++) {
+                    if (popmap[i][j] != 0 && grow(i, j) < popmap[i][j]) {
+                        popmap[i][j] += grow(i, j);
+                    }
+
+                    if (popmap[i][j] < 0) {
+                        popmap[i][j] = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    private double grow(int i, int j) {
+        double effpopcap = biomes[i][j].carrycap * (osn.eval(i, j)+1) * (1 + 0.1*sin(time / 2000f));
+
+        return popmap[i][j] * (1 - popmap[i][j] / effpopcap) / 1000f;
+    }
+
+    public void abduct() {
+        popmap[selY][selX] /= 2;
+    }
+
+    public void dx(int dx) {
+        if (mbX >= 2) {
+            mbX = 0;
+
+            x += dx;
+
+            if (x > 1 || selX < (Window.w.getCanvas().getBufferX() - 30) / 2) x = 1;
+            if (x < -biomes[0].length + Window.w.getCanvas().getBufferX() - 30 ||
+                    selX > biomes[0].length - (Window.w.getCanvas().getBufferX() - 30) / 2)
+                x = -biomes[0].length + Window.w.getCanvas().getBufferX() - 30;
+
+            selX -= dx;
+
+            if (selX < 0) selX = 0;
+            if (selX >= biomes[0].length) selX = biomes[0].length - 1;
+        } else {
+            mbX++;
+        }
+    }
+
+    public void dy(int dy) {
+        if (mbY >= 2) {
+            mbY = 0;
+
+            y += dy;
+
+            if (y > 1 || selY < Window.w.getCanvas().getBufferY() / 2) y = 1;
+            if (y < -biomes.length + Window.w.getCanvas().getBufferY() - 1 ||
+                    selY > biomes.length - Window.w.getCanvas().getBufferY() / 2)
+                y = -biomes.length + Window.w.getCanvas().getBufferY() - 1;
+
+            selY -= dy;
+
+            if (selY < 0) selY = 0;
+            if (selY >= biomes.length) selY = biomes.length - 1;
+        } else {
+            mbY++;
+        }
+    }
+
+    private float max(float[][] heightmap) {
+        float max = Integer.MIN_VALUE;
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                max = Math.max(max, heightmap[i][j]);
+            }
+        }
+
+        return max;
+    }
+
+    private float min(float[][] heightmap) {
+        float min = Integer.MAX_VALUE;
+
+        for (int i = 0; i < biomes.length; i++) {
+            for (int j = 0; j < biomes[0].length; j++) {
+                min = Math.min(min, heightmap[i][j]);
+            }
+        }
+
+        return min;
     }
 
     private void raise(float[][] initHeightMap, Random r    ) {
@@ -309,7 +402,7 @@ public class World {
 
         for (int i = 0; i < initHeightMap.length; i++) {
             for (int j = 0; j < initHeightMap[0].length; j++) {
-                               if (in(j, i, vertx, verty) || in(j - w, i, vertx, verty) || in(j + w, i, vertx, verty)
+                if (in(j, i, vertx, verty) || in(j - w, i, vertx, verty) || in(j + w, i, vertx, verty)
                         || in(j, i+h, vertx, verty) || in(j, i-h, vertx, verty)
                         || in(j-w, i-h, vertx, verty) || in(j-w, i+h, vertx, verty)
                         || in(j+w, i-h, vertx, verty) || in(j+w, i+h, vertx, verty)) {
@@ -433,100 +526,6 @@ public class World {
         }
 
         return civmap[i][j] == c;
-    }
-
-    public void update(float dt) {
-        time += dt * 1000;
-
-        if (Window.w.getFrame() % 10 == 0) Civilization.spread(civs, biomes, civmap, popmap);
-
-        if (time % 10 == 0) {
-            for (int i = 0; i < biomes.length; i++) {
-                for (int j = 0; j < biomes[0].length; j++) {
-                    if (popmap[i][j] != 0 && grow(i, j) < popmap[i][j]) {
-                        popmap[i][j] += grow(i, j);
-                    }
-
-                    if (popmap[i][j] < 0) {
-                        popmap[i][j] = 0;
-                    }
-                }
-            }
-        }
-    }
-
-    private double grow(int i, int j) {
-        double effpopcap = biomes[i][j].carrycap * (osn.eval(i, j)+1) * (1 + 0.1*sin(time / 200f));
-
-        return popmap[i][j] * (1 - popmap[i][j] / effpopcap) / 1000f;
-    }
-
-    public void abduct() {
-        popmap[selY][selX] /= 2;
-    }
-
-    public void dx(int dx) {
-        if (mbX >= 2) {
-            mbX = 0;
-
-            x += dx;
-
-            if (x > 1 || selX < (Window.w.getCanvas().getBufferX() - 30) / 2) x = 1;
-            if (x < -biomes[0].length + Window.w.getCanvas().getBufferX() - 30 ||
-                    selX > biomes[0].length - (Window.w.getCanvas().getBufferX() - 30) / 2)
-                x = -biomes[0].length + Window.w.getCanvas().getBufferX() - 30;
-
-            selX -= dx;
-
-            if (selX < 0) selX = 0;
-            if (selX >= biomes[0].length) selX = biomes[0].length - 1;
-        } else {
-            mbX++;
-        }
-    }
-
-    public void dy(int dy) {
-        if (mbY >= 2) {
-            mbY = 0;
-
-            y += dy;
-
-            if (y > 1 || selY < Window.w.getCanvas().getBufferY() / 2) y = 1;
-            if (y < -biomes.length + Window.w.getCanvas().getBufferY() - 1 ||
-                    selY > biomes.length - Window.w.getCanvas().getBufferY() / 2)
-                y = -biomes.length + Window.w.getCanvas().getBufferY() - 1;
-
-            selY -= dy;
-
-            if (selY < 0) selY = 0;
-            if (selY >= biomes.length) selY = biomes.length - 1;
-        } else {
-            mbY++;
-        }
-    }
-
-    private float max(float[][] heightmap) {
-        float max = Integer.MIN_VALUE;
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                max = Math.max(max, heightmap[i][j]);
-            }
-        }
-
-        return max;
-    }
-
-    private float min(float[][] heightmap) {
-        float min = Integer.MAX_VALUE;
-
-        for (int i = 0; i < biomes.length; i++) {
-            for (int j = 0; j < biomes[0].length; j++) {
-                min = Math.min(min, heightmap[i][j]);
-            }
-        }
-
-        return min;
     }
 
     private float eval(double a, double b) {

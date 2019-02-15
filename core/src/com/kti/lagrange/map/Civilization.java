@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class Civilization {
-
     public Color c;
     private boolean dead;
     private List<Integer> xown;
@@ -38,16 +37,17 @@ public class Civilization {
                 civs.remove(c);
                 k--;
             } else {
-                c.manpower = 0;
+                int manpower = 0;
                 for (int i = 0; i < c.xown.size(); i++) {
                     if (c.cores.get(i)) {
                         spr(civmap, biomes, popmap, c, c.yown.get(i) + 1, c.xown.get(i));
                         spr(civmap, biomes, popmap, c, c.yown.get(i) - 1, c.xown.get(i));
                         spr(civmap, biomes, popmap, c, c.yown.get(i), c.xown.get(i) + 1);
                         spr(civmap, biomes, popmap, c, c.yown.get(i), c.xown.get(i) - 1);
-                        c.manpower += (int)popmap[c.yown.get(i)][c.xown.get(i)];
+                        manpower += (int)popmap[c.yown.get(i)][c.xown.get(i)];
                     }
                 }
+                c.manpower = manpower;
             }
         }
 
@@ -67,17 +67,26 @@ public class Civilization {
 
         if (civmap[i][j] == c) return;
 
-        if (biomes[i][j] == Biome.SEA || biomes[i][j] == Biome.OASIS || biomes[i][j] == Biome.LAKE ||
-                biomes[i][j] == Biome.ICE) return;
+        if (biomes[i][j] == Biome.SEA || biomes[i][j] == Biome.ICE) return;
 
         Civilization k = civmap[i][j];
+
+
+
+        if (k.dead) {
+            k.remove(j, i);
+            civmap[i][j] = c;
+            c.add(j, i);
+            return;
+        }
 
         if (c.str(j, i) >= k.str(j, i) - 5) {
             k.remove(j, i);
             k.checkDeath();
 
             civmap[i][j] = c;
-            popmap[i][j] /= 1.1f;
+            c.damage(popmap);
+            k.damage(popmap);
 
             c.add(j, i);
         }
@@ -108,15 +117,32 @@ public class Civilization {
         }
     }
 
+    private void damage(float[][] popmap) {
+        int valid = 0;
+        for (int i = 0; i < xown.size(); i++) {
+            if (popmap[yown.get(i)][xown.get(i)] > 2) valid++;
+        }
+
+        for (int i = 0; i < xown.size(); i++) {
+            if (popmap[yown.get(i)][xown.get(i)] > 2) popmap[yown.get(i)][xown.get(i)] -= 10f / valid;
+        }
+
+        if (valid == 0) {
+            dead = true;
+        }
+    }
+
     private int str(int x, int y) {
         if (manpower > 500) {
-            return (int) Math.sqrt(manpower / 80) - 5 - dist(x, y) / 5;
+            return (int) Math.pow(manpower / WorldConstant.requestConstant("manpowermodifier"),
+                    WorldConstant.requestConstant("manpowerfactor")) - 5 - (int)Math.pow(dist(x, y),
+                    WorldConstant.requestConstant("dist2factor")) / 5;
         } else {
             return -500;
         }
     }
 
-    private int dist(int x, int y) {
+    private float dist(int x, int y) {
         return (xown.get(0) - x) * (xown.get(0) - x) + (yown.get(0) - y) * (yown.get(0) - y);
     }
 

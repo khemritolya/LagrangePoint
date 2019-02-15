@@ -21,6 +21,7 @@ public class CC {
 
     public static Color randomColor() {
         Color c;
+
         while (registered.contains(c = newRandomColor()));
 
         registered.add(c);

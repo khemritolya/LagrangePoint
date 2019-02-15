@@ -1,0 +1,9 @@
+#
+# Lagrange Point World Settings file
+#
+# Edit at your own peril
+#
+
+manpowermodifier 80
+manpowerfactor 0.8
+dist2factor 1.5
